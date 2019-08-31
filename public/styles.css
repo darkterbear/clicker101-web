@@ -1,3 +1,63 @@
+* {
+  font-family: "Grantipo Beta 001", sans-serif !important;
+}
 
+html,
+body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  font-size: 16px;
+  padding: 0;
+}
+html .v-center-content,
+body .v-center-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+html button,
+body button {
+  border: none;
+  background: none;
+  height: 2.25rem;
+  padding: 0 1rem 0 1rem;
+  background-color: #527aff;
+  color: #fff;
+  font-size: 1.125rem;
+  border-color: none;
+  border-radius: 4px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.12), 0 2px 4px 0 rgba(0, 0, 0, 0.08);
+}
+html .pad-top,
+body .pad-top {
+  padding-top: 1rem;
+}
+html .content,
+body .content {
+  height: 100%;
+  width: 100%;
+  padding: 6rem 4rem 2rem 4rem;
+}
+html .content h1,
+body .content h1 {
+  font-weight: bold;
+  font-size: 3rem;
+}
+html .content h2,
+body .content h2 {
+  position: absolute;
+  left: 4rem;
+  top: 6rem;
+  font-weight: bold;
+  font-size: 2.25rem;
+  color: #527aff;
+}
+html .content h3,
+body .content h3 {
+  font-weight: bold;
+  font-size: 1.5rem;
+}
 
 /*# sourceMappingURL=styles.css.map */

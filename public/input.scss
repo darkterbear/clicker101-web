@@ -1,4 +1,5 @@
-$darkgray: #333333;
+$darkgray: #888;
+$darkgray: #bbb;
 $blue: #527aff;
 $shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.12), 0 2px 4px 0 rgba(0, 0, 0, 0.08);
 $largeShadow: 0 6px 12px 0 rgba(0, 0, 0, 0.18), 0 3px 6px 0 rgba(0, 0, 0, 0.12);
@@ -11,4 +12,71 @@ $largeShadow: 0 6px 12px 0 rgba(0, 0, 0, 0.18), 0 3px 6px 0 rgba(0, 0, 0, 0.12);
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
+}
+
+* {
+	font-family: 'Grantipo Beta 001', sans-serif !important;
+}
+
+html,
+body {
+	height: 100%;
+	width: 100%;
+	margin: 0;
+
+	font-size: 16px;
+	padding: 0;
+
+	.v-center-content {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+	}
+
+	button {
+		border: none;
+		background: none;
+
+		height: 2.25rem;
+		padding: 0 1rem 0 1rem;
+
+		background-color: $blue;
+		color: #fff;
+		font-size: 1.125rem;
+		border-color: none;
+		border-radius: 4px;
+		box-shadow: $shadow;
+	}
+
+	.pad-top {
+		padding-top: 1rem;
+	}
+
+	.content {
+		height: 100%;
+		width: 100%;
+		padding: 6rem 4rem 2rem 4rem;
+
+		// question text
+		h1 {
+			font-weight: bold;
+			font-size: 3rem;
+		}
+
+		// title
+		h2 {
+			position: absolute;
+			left: 4rem;
+			top: 6rem;
+			font-weight: bold;
+			font-size: 2.25rem;
+			color: $blue;
+		}
+
+		h3 {
+			font-weight: bold;
+			font-size: 1.5rem;
+		}
+	}
 }
