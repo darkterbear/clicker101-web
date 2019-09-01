@@ -5,6 +5,8 @@ import LostPage from './index/LostPage'
 import LoginPage from './index/LoginPage'
 import RegistrationPage from './index/RegistrationPage'
 import TeacherClassesPage from './teacher/TeacherClassesPage'
+import TeacherClassPage from './teacher/TeacherClassPage'
+import ProblemSetPage from './teacher/ProblemSetPage'
 
 export default class App extends React.Component {
 	render() {
@@ -16,6 +18,8 @@ export default class App extends React.Component {
 					<Route exact path="/register" component={RegistrationPage} />
 
 					<Route exact path="/teacher/classes" component={TeacherClassesPage} />
+					<Route exact path="/teacher/class" component={TeacherClassPage} />
+					<Route exact path="/teacher/problem-set" component={ProblemSetPage} />
 
 					<Route component={LostPage} />
 				</Switch>

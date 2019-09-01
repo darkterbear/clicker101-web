@@ -40,3 +40,40 @@ exports.teacherFetchClasses = () => {
 		credentials: 'include'
 	})
 }
+
+exports.createClass = name => {
+	return fetch(BASE_URL + '/api/teachers/create-class', {
+		method: 'POST',
+		headers: {
+			Accept: 'application/json',
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({
+			name
+		}),
+		credentials: 'include'
+	})
+}
+
+exports.teacherFetchClass = id => {
+	return fetch(BASE_URL + `/api/teachers/fetch-class?classId=${id}`, {
+		method: 'GET',
+		headers: {
+			Accept: 'application/json'
+		},
+		credentials: 'include'
+	})
+}
+
+exports.teacherFetchProblemSet = id => {
+	return fetch(
+		BASE_URL + `/api/teachers/fetch-problem-set?problemSetId=${id}`,
+		{
+			method: 'GET',
+			headers: {
+				Accept: 'application/json'
+			},
+			credentials: 'include'
+		}
+	)
+}

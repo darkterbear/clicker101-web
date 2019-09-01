@@ -76,47 +76,47 @@ html input:focus,
 body input:focus {
   border-color: #527aff;
 }
+html h1,
+body h1 {
+  font-weight: bold;
+  font-size: 3rem;
+}
+html h2,
+body h2 {
+  font-weight: bold;
+  font-size: 2.25rem;
+  color: #527aff;
+}
+html h2.top-left-absolute,
+body h2.top-left-absolute {
+  position: absolute;
+  left: 4rem;
+  top: 6rem;
+}
+html h2.before-button,
+body h2.before-button {
+  margin-right: 2rem;
+}
+html h3,
+body h3 {
+  font-weight: bold;
+  font-size: 1.5rem;
+}
+html h5,
+body h5 {
+  font-size: 80%;
+  font-weight: 400;
+  margin: 0.25rem 0 0.25rem 0;
+}
+html h5.error,
+body h5.error {
+  color: #f95757;
+}
 html .content,
 body .content {
   height: 100%;
   width: 100%;
   padding: 6rem 4rem 2rem 4rem;
-}
-html .content h1,
-body .content h1 {
-  font-weight: bold;
-  font-size: 3rem;
-}
-html .content h2,
-body .content h2 {
-  font-weight: bold;
-  font-size: 2.25rem;
-  color: #527aff;
-}
-html .content h2.top-left-absolute,
-body .content h2.top-left-absolute {
-  position: absolute;
-  left: 4rem;
-  top: 6rem;
-}
-html .content h2.before-button,
-body .content h2.before-button {
-  margin-right: 2rem;
-}
-html .content h3,
-body .content h3 {
-  font-weight: bold;
-  font-size: 1.5rem;
-}
-html .content h5,
-body .content h5 {
-  font-size: 80%;
-  font-weight: 400;
-  margin: 0.25rem 0 0.25rem 0;
-}
-html .content h5.error,
-body .content h5.error {
-  color: #f95757;
 }
 html .content table,
 body .content table {

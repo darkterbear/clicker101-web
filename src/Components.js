@@ -4,7 +4,7 @@ export class Button extends Component {
 	render() {
 		return (
 			<button
-				class={'normal' + (this.props.disabled ? ' disabled' : '')}
+				className={'normal' + (this.props.disabled ? ' disabled' : '')}
 				onClick={this.props.onClick}>
 				{this.props.text}
 			</button>
@@ -57,6 +57,10 @@ export class Textbox extends Component {
 		if (e.key === 'ArrowUp') {
 			if (this.props.onArrowUp) this.props.onArrowUp()
 		}
+	}
+
+	componentWillReceiveProps(newProps) {
+		this.setState({ text: newProps.text })
 	}
 
 	render() {
