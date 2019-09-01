@@ -21,18 +21,52 @@ html button,
 body button {
   border: none;
   background: none;
+  font-size: 1.125rem;
+  padding: 0 0.25rem 0 0.25rem;
+  margin: 0.25rem 0.25rem 0.25rem 0.25rem;
+}
+html button.normal,
+body button.normal {
   height: 2.25rem;
   padding: 0 1rem 0 1rem;
   background-color: #527aff;
   color: #fff;
-  font-size: 1.125rem;
   border-color: none;
   border-radius: 4px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.12), 0 2px 4px 0 rgba(0, 0, 0, 0.08);
+  transition: background-color 0.2s;
 }
-html .pad-top,
-body .pad-top {
-  padding-top: 1rem;
+html button.normal.disabled,
+body button.normal.disabled {
+  background-color: #aaa;
+}
+html button.small,
+body button.small {
+  color: #527aff;
+  height: 1.5rem;
+}
+html button.small.disabled,
+body button.small.disabled {
+  color: #888;
+}
+html input,
+body input {
+  border: none;
+  border-style: solid;
+  border-radius: 4px;
+  border-color: #888;
+  font-size: 1.125rem;
+  margin: 0.25rem 0.25rem 0.25rem 0.25rem;
+  padding: 0 0.5rem 0 0.5rem;
+  height: 2.25rem;
+}
+html input.center,
+body input.center {
+  text-align: center;
+}
+html input:focus,
+body input:focus {
+  border-color: #527aff;
 }
 html .content,
 body .content {

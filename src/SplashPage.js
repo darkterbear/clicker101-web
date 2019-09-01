@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Button } from './Components'
+import { Button, SmallButton } from './Components'
 
 export default class SplashPage extends Component {
 	render() {
@@ -11,10 +11,21 @@ export default class SplashPage extends Component {
 						<h3>Measuring student learning accessibly and insightfully.</h3>
 					</div>
 					<div className="row justify-content-center pad-top">
-						<Button text="Get Started" />
+						<Button text="Get Started" onClick={this.getStarted} />
+					</div>
+					<div className="row justify-content-center pad-top">
+						<SmallButton text="I have an account" onClick={this.login} />
 					</div>
 				</div>
 			</div>
 		)
+	}
+
+	getStarted = () => {
+		this.props.history.push('/register')
+	}
+
+	login = () => {
+		this.props.history.push('/login')
 	}
 }
