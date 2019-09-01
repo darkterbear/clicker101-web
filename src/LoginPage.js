@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Button, Textbox } from './Components'
-import { login } from './API'
+import { authenticate } from './API'
 
 export default class LoginPage extends Component {
 	constructor(props) {
@@ -44,12 +44,10 @@ export default class LoginPage extends Component {
 	login = async () => {
 		let email = this.emailRef.current.getText()
 		let password = this.passwordRef.current.getText()
-		let loginResponse = await login(email, password)
+		let loginResponse = await authenticate(email, password)
 
 		let status = loginResponse.status
-		if (status === 200 || status === 204)
-			this.props.history.push('/teacher/classes')
-		else if (status === 201 || status === 205)
-			this.props.history.push('/student/classes')
+		if (status === 200) this.props.history.push('/teacher/classes')
+		else if (status === 201) this.props.history.push('/student/classes')
 	}
 }

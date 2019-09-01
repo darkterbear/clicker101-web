@@ -1,6 +1,6 @@
 const BASE_URL = 'http://localhost:3000'
 
-exports.login = (email, password) => {
+exports.authenticate = (email, password) => {
 	return fetch(BASE_URL + '/api/authenticate', {
 		method: 'POST',
 		headers: {
@@ -10,7 +10,8 @@ exports.login = (email, password) => {
 		body: JSON.stringify({
 			email,
 			password
-		})
+		}),
+		credentials: 'include'
 	})
 }
 
