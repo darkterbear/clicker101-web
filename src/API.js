@@ -1,7 +1,7 @@
 const BASE_URL = 'http://localhost:3000'
 
 exports.login = (email, password) => {
-	return fetch(BASE_URL + '/api/login', {
+	return fetch(BASE_URL + '/api/authenticate', {
 		method: 'POST',
 		headers: {
 			Accept: 'application/json',
