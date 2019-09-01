@@ -51,11 +51,18 @@ body {
 			border-radius: 4px;
 			box-shadow: $shadow;
 
+			&:hover {
+				box-shadow: $largeShadow;
+			}
+
 			&.disabled {
+				&:hover {
+					box-shadow: $shadow;
+				}
 				background-color: $lightgray;
 			}
 
-			transition: background-color 0.2s;
+			transition: all 0.2s;
 		}
 
 		&.small {
@@ -101,12 +108,19 @@ body {
 
 		// title
 		h2 {
-			position: absolute;
-			left: 4rem;
-			top: 6rem;
 			font-weight: bold;
 			font-size: 2.25rem;
 			color: $blue;
+
+			&.top-left-absolute {
+				position: absolute;
+				left: 4rem;
+				top: 6rem;
+			}
+
+			&.before-button {
+				margin-right: 2rem;
+			}
 		}
 
 		h3 {
@@ -122,6 +136,22 @@ body {
 
 			&.error {
 				color: $red;
+			}
+		}
+
+		table {
+			margin-top: 1rem;
+			font-size: 1.125rem;
+			width: 100%;
+
+			tr.class-item {
+				cursor: pointer;
+
+				&:hover {
+					color: $blue;
+				}
+
+				transition: color 0.2s;
 			}
 		}
 	}

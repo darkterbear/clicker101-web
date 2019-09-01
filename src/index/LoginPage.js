@@ -17,7 +17,7 @@ export default class LoginPage extends Component {
 	render() {
 		return (
 			<div className="content v-center-content">
-				<h2>Clicker101</h2>
+				<h2 className="top-left-absolute">Clicker101</h2>
 				<div className="container">
 					<div className="row justify-content-center">
 						<h3>Welcome back!</h3>

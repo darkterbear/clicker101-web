@@ -30,3 +30,13 @@ exports.register = (email, name, password, type) => {
 		})
 	})
 }
+
+exports.teacherFetchClasses = () => {
+	return fetch(BASE_URL + '/api/teachers/fetch-classes', {
+		method: 'GET',
+		headers: {
+			Accept: 'application/json'
+		},
+		credentials: 'include'
+	})
+}
