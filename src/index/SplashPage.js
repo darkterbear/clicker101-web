@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
-import { Button, SmallButton } from './Components'
-import { authenticate } from './API'
+import { Button, SmallButton } from '../Components'
+import { authenticate } from '../API'
 
 export default class SplashPage extends Component {
 	render() {

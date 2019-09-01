@@ -37,6 +37,28 @@ export class Textbox extends Component {
 		return this.state.text
 	}
 
+	clear = () => {
+		this.setState({ text: '' })
+	}
+
+	handleKeyDown = e => {
+		if (e.key === 'Enter') {
+			if (this.props.onEnter) this.props.onEnter()
+		}
+
+		if (e.key === 'Tab') {
+			if (this.props.onTab) this.props.onTab()
+		}
+
+		if (e.key === 'ArrowDown') {
+			if (this.props.onArrowDown) this.props.onArrowDown()
+		}
+
+		if (e.key === 'ArrowUp') {
+			if (this.props.onArrowUp) this.props.onArrowUp()
+		}
+	}
+
 	render() {
 		return (
 			<input

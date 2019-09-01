@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Button } from './Components'
+import { Button } from '../Components'
 
 export default class LostPage extends Component {
 	render() {

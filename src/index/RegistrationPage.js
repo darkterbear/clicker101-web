@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
-import { Button, Textbox } from './Components'
-import { isValidEmail, isOnlyWhitespace } from './helper'
-import { register } from './API'
+import { Button, Textbox } from '../Components'
+import { isValidEmail, isOnlyWhitespace } from '../helper'
+import { register } from '../API'
 
 export default class RegistrationPage extends Component {
 	constructor(props) {

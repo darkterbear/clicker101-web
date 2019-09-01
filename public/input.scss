@@ -1,6 +1,7 @@
 $darkgray: #888;
 $lightgray: #aaa;
 $blue: #527aff;
+$red: #f95757;
 $shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.12), 0 2px 4px 0 rgba(0, 0, 0, 0.08);
 $largeShadow: 0 6px 12px 0 rgba(0, 0, 0, 0.18), 0 3px 6px 0 rgba(0, 0, 0, 0.12);
 
@@ -111,6 +112,17 @@ body {
 		h3 {
 			font-weight: bold;
 			font-size: 1.5rem;
+		}
+
+		// small text (errors, etc.)
+		h5 {
+			font-size: 80%;
+			font-weight: 400;
+			margin: 0.25rem 0 0.25rem 0;
+
+			&.error {
+				color: $red;
+			}
 		}
 	}
 }
