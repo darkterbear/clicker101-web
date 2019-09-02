@@ -1,5 +1,5 @@
 * {
-  font-family: "Grantipo Beta 001", sans-serif !important;
+  font-family: "Grantipo Beta 001", sans-serif;
 }
 
 html,
@@ -16,6 +16,15 @@ body .v-center-content {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+}
+html i,
+body i {
+  transform: translateY(6px);
+  cursor: pointer;
+}
+html i.green,
+body i.green {
+  color: #20df8f;
 }
 html button,
 body button {
@@ -59,6 +68,7 @@ body button.small.disabled {
 }
 html input,
 body input {
+  display: block;
   border: none;
   border-style: solid;
   border-radius: 4px;
@@ -71,6 +81,10 @@ body input {
 html input.center,
 body input.center {
   text-align: center;
+}
+html input.full-width,
+body input.full-width {
+  width: calc(100% - 0.5rem);
 }
 html input:focus,
 body input:focus {

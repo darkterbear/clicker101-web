@@ -8,7 +8,46 @@ const isOnlyWhitespace = s => {
 	return s.replace(/\s/g, '').length === 0
 }
 
+const modalStyle = {
+	content: {
+		top: '50%',
+		left: '50%',
+		right: 'auto',
+		bottom: 'auto',
+		marginRight: '-50%',
+		transform: 'translate(-50%, -50%)',
+		border: 'none',
+		boxShadow:
+			'0 4px 8px 0 rgba(0, 0, 0, 0.12), 0 2px 4px 0 rgba(0, 0, 0, 0.08)'
+	}
+}
+
+const formatDate = date => {
+	var monthNames = [
+		'January',
+		'February',
+		'March',
+		'April',
+		'May',
+		'June',
+		'July',
+		'August',
+		'September',
+		'October',
+		'November',
+		'December'
+	]
+
+	var day = date.getDate()
+	var monthIndex = date.getMonth()
+	var year = date.getFullYear()
+
+	return monthNames[monthIndex] + ' ' + day + ', ' + year
+}
+
 module.exports = {
 	isValidEmail,
-	isOnlyWhitespace
+	isOnlyWhitespace,
+	modalStyle,
+	formatDate
 }

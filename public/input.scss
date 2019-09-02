@@ -2,6 +2,7 @@ $darkgray: #888;
 $lightgray: #aaa;
 $blue: #527aff;
 $red: #f95757;
+$green: #20df8f;
 $shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.12), 0 2px 4px 0 rgba(0, 0, 0, 0.08);
 $largeShadow: 0 6px 12px 0 rgba(0, 0, 0, 0.18), 0 3px 6px 0 rgba(0, 0, 0, 0.12);
 
@@ -16,7 +17,7 @@ $largeShadow: 0 6px 12px 0 rgba(0, 0, 0, 0.18), 0 3px 6px 0 rgba(0, 0, 0, 0.12);
 }
 
 * {
-	font-family: 'Grantipo Beta 001', sans-serif !important;
+	font-family: 'Grantipo Beta 001', sans-serif;
 }
 
 html,
@@ -33,6 +34,15 @@ body {
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
+	}
+
+	i {
+		transform: translateY(6px);
+		cursor: pointer;
+
+		&.green {
+			color: $green;
+		}
 	}
 
 	button {
@@ -76,6 +86,7 @@ body {
 	}
 
 	input {
+		display: block;
 		border: none;
 		border-style: solid;
 		border-radius: 4px;
@@ -86,6 +97,10 @@ body {
 
 		&.center {
 			text-align: center;
+		}
+
+		&.full-width {
+			width: calc(100% - 0.5rem);
 		}
 
 		&:focus {

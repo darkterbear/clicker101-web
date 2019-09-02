@@ -53,6 +53,7 @@ export default class RegistrationPage extends Component {
 					</div>
 					<div className="row justify-content-center">
 						<Button
+							enableClickWhenDisabled={true}
 							text="I'm a Student"
 							disabled={this.state.type !== 'student'}
 							onClick={() => {
@@ -60,6 +61,7 @@ export default class RegistrationPage extends Component {
 							}}
 						/>
 						<Button
+							enableClickWhenDisabled={true}
 							text="I'm a Teacher"
 							disabled={this.state.type !== 'teacher'}
 							onClick={() => {

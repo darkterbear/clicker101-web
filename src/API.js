@@ -77,3 +77,36 @@ exports.teacherFetchProblemSet = id => {
 		}
 	)
 }
+
+exports.createProblemSet = (name, classId, problems = []) => {
+	return fetch(BASE_URL + '/api/teachers/create-problem-set', {
+		method: 'POST',
+		headers: {
+			Accept: 'application/json',
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({
+			name,
+			classId,
+			problems
+		}),
+		credentials: 'include'
+	})
+}
+
+exports.addProblem = (problemSetId, question, choices, correct) => {
+	return fetch(BASE_URL + '/api/teachers/add-problem', {
+		method: 'POST',
+		headers: {
+			Accept: 'application/json',
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({
+			problemSetId,
+			question,
+			choices,
+			correct
+		}),
+		credentials: 'include'
+	})
+}

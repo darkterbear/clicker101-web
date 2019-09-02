@@ -1,11 +1,16 @@
 import React, { Component } from 'react'
 
 export class Button extends Component {
+	onClick = () => {
+		if (!this.props.disabled || this.props.enableClickWhenDisabled)
+			this.props.onClick()
+	}
+
 	render() {
 		return (
 			<button
 				className={'normal' + (this.props.disabled ? ' disabled' : '')}
-				onClick={this.props.onClick}>
+				onClick={this.onClick}>
 				{this.props.text}
 			</button>
 		)
@@ -66,6 +71,7 @@ export class Textbox extends Component {
 	render() {
 		return (
 			<input
+				style={this.props.style}
 				onKeyDown={this.handleKeyDown}
 				type={this.props.type}
 				className={this.props.className}
