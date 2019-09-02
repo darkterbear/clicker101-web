@@ -1,25 +1,34 @@
 import React, { Component } from 'react'
 import { Button, Table, Textbox } from '../Components'
 import queryString from 'query-string'
-import { teacherFetchProblemSet, addProblem } from '../API'
+import {
+	teacherFetchProblemSet,
+	addProblem,
+	executeProblemSet,
+	startNextQuestion
+} from '../API'
 import Modal from 'react-modal'
 const { isOnlyWhitespace, modalStyle } = require('../helper')
 
 Modal.setAppElement('#root')
 
+const letters = ['A', 'B', 'C', 'D', 'E', 'F']
 export default class ProblemSetPage extends Component {
 	constructor(props) {
 		super(props)
 
 		this.state = {
 			problemSet: {
-				name: ''
+				name: '',
+				problems: [],
+				currentProblem: null
 			},
 			newQuestionModalOpen: false,
 			newQuestionModalQuestion: '',
 			newQuestionModalChoices: ['', ''],
 			newQuestionModalCorrect: -1,
-			newQuestionModalIsLoading: ''
+			newQuestionModalIsLoading: '',
+			showingAnswer: false
 		}
 	}
 
@@ -115,7 +124,34 @@ export default class ProblemSetPage extends Component {
 		this.setState({ newQuestionModalCorrect: i })
 	}
 
+	startProblemSet = async () => {
+		let executeProblemSetResponse = await executeProblemSet(
+			this.state.problemSet._id
+		)
+		if (executeProblemSetResponse.status === 200) {
+			this.fetchProblemSet()
+		}
+	}
+
+	proceedQuestion = async () => {
+		if (this.state.showingAnswer) {
+			let nextQuestionResponse = await startNextQuestion(
+				this.state.problemSet.classId
+			)
+			if (nextQuestionResponse.status === 200) {
+				this.setState({ showingAnswer: false })
+				this.fetchProblemSet()
+			}
+		} else {
+			this.setState({ showingAnswer: true })
+		}
+	}
+
 	render() {
+		let currentProblem =
+			this.state.problemSet.currentProblem !== null
+				? this.state.problemSet.problems[this.state.problemSet.currentProblem]
+				: null
 		return (
 			<div className="content">
 				<Modal
@@ -173,29 +209,99 @@ export default class ProblemSetPage extends Component {
 						<h5 className="">Loading...</h5>
 					)}
 				</Modal>
-				<div className="container-fluid" style={{ padding: 0 }}>
+				<div className="container-fluid h-100" style={{ padding: 0 }}>
 					<div className="row" style={{ margin: 0 }}>
 						<h2 className="before-button">{this.state.problemSet.name}</h2>
-						<Button text="Add Problem" onClick={this.openNewQuestionModal} />
+						<Button
+							text="Add Problem"
+							onClick={this.openNewQuestionModal}
+							disabled={this.state.problemSet.executionDate}
+						/>
 					</div>
-					<table className="table">
-						<thead>
-							<tr>
-								<th>Question</th>
-							</tr>
-						</thead>
-						<tbody>
-							{this.state.problemSet.problems &&
-								this.state.problemSet.problems.map((p, i) => (
-									<tr
-										key={p._id}
-										className="class-item"
-										onClick={() => this.selectProblem(i)}>
-										<td>{p.question}</td>
+					<div className="row" style={{ height: 'calc(100% - 3.1875rem)' }}>
+						<div className="col-4">
+							<table className="table">
+								<thead>
+									<tr>
+										<th>Question</th>
 									</tr>
-								))}
-						</tbody>
-					</table>
+								</thead>
+								<tbody>
+									{this.state.problemSet.problems &&
+										this.state.problemSet.problems.map((p, i) => (
+											<tr
+												key={p._id}
+												className={
+													'class-item' +
+													(this.state.problemSet.currentProblem === i
+														? ' highlight'
+														: '')
+												}
+												onClick={() => this.selectProblem(i)}>
+												<td>{p.question}</td>
+											</tr>
+										))}
+								</tbody>
+							</table>
+						</div>
+						<div className="col-8">
+							{/* not yet started */}
+							{!this.state.problemSet.executionDate && (
+								<div class="v-center-content h-100">
+									<Button
+										text="Start Problem Set"
+										onClick={this.startProblemSet}
+									/>
+								</div>
+							)}
+
+							{/* underway */}
+							{this.state.problemSet.executionDate &&
+								this.state.problemSet.currentProblem !== null && (
+									<div
+										className="container-fluid h-100"
+										style={{ paddingTop: '1rem' }}>
+										<div className="row">
+											<h1>{currentProblem.question}</h1>
+										</div>
+										<div className="row">
+											{currentProblem.choices.map((choice, i) => (
+												<div
+													className={
+														'choice col' +
+														(this.state.showingAnswer &&
+														currentProblem.correct === i
+															? ' correct'
+															: '')
+													}>
+													<h3>{letters[i] + '. ' + choice}</h3>
+												</div>
+											))}
+										</div>
+										<div className="row">
+											<Button
+												text={
+													this.state.problemSet.currentProblem ===
+														this.state.problemSet.problems.length - 1 &&
+													this.state.showingAnswer
+														? 'Finish'
+														: this.state.showingAnswer
+														? 'Next Question'
+														: 'Show Answer'
+												}
+												onClick={this.proceedQuestion}
+											/>
+										</div>
+									</div>
+								)}
+
+							{/* finished */}
+							{this.state.problemSet.executionDate &&
+								this.state.problemSet.currentProblem === null && (
+									<div>FINISHED</div>
+								)}
+						</div>
+					</div>
 				</div>
 			</div>
 		)

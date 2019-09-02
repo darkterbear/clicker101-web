@@ -110,3 +110,31 @@ exports.addProblem = (problemSetId, question, choices, correct) => {
 		credentials: 'include'
 	})
 }
+
+exports.executeProblemSet = problemSetId => {
+	return fetch(BASE_URL + '/api/teachers/execute-problem-set', {
+		method: 'POST',
+		headers: {
+			Accept: 'application/json',
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({
+			problemSetId
+		}),
+		credentials: 'include'
+	})
+}
+
+exports.startNextQuestion = classId => {
+	return fetch(BASE_URL + '/api/teachers/start-next-problem', {
+		method: 'POST',
+		headers: {
+			Accept: 'application/json',
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({
+			classId
+		}),
+		credentials: 'include'
+	})
+}
