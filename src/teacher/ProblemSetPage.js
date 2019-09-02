@@ -212,11 +212,27 @@ export default class ProblemSetPage extends Component {
 				<div className="container-fluid h-100" style={{ padding: 0 }}>
 					<div className="row" style={{ margin: 0 }}>
 						<h2 className="before-button">{this.state.problemSet.name}</h2>
-						<Button
-							text="Add Problem"
-							onClick={this.openNewQuestionModal}
-							disabled={this.state.problemSet.executionDate}
-						/>
+						{!this.state.problemSet.executionDate && (
+							<Button text="Add Problem" onClick={this.openNewQuestionModal} />
+						)}
+						{!this.state.problemSet.executionDate && (
+							<Button text="Start Problem Set" onClick={this.startProblemSet} />
+						)}
+						{this.state.problemSet.executionDate &&
+							this.state.problemSet.currentProblem !== null && (
+								<Button
+									text={
+										this.state.problemSet.currentProblem ===
+											this.state.problemSet.problems.length - 1 &&
+										this.state.showingAnswer
+											? 'Finish'
+											: this.state.showingAnswer
+											? 'Next Question'
+											: 'Show Answer'
+									}
+									onClick={this.proceedQuestion}
+								/>
+							)}
 					</div>
 					<div className="row" style={{ height: 'calc(100% - 3.1875rem)' }}>
 						<div className="col-4">
@@ -248,10 +264,8 @@ export default class ProblemSetPage extends Component {
 							{/* not yet started */}
 							{!this.state.problemSet.executionDate && (
 								<div class="v-center-content h-100">
-									<Button
-										text="Start Problem Set"
-										onClick={this.startProblemSet}
-									/>
+									Start this problem set by clicking "Start Problem Set" in the
+									upper left!
 								</div>
 							)}
 
@@ -268,7 +282,7 @@ export default class ProblemSetPage extends Component {
 											{currentProblem.choices.map((choice, i) => (
 												<div
 													className={
-														'choice col' +
+														'choice col-md' +
 														(this.state.showingAnswer &&
 														currentProblem.correct === i
 															? ' correct'
@@ -278,27 +292,15 @@ export default class ProblemSetPage extends Component {
 												</div>
 											))}
 										</div>
-										<div className="row">
-											<Button
-												text={
-													this.state.problemSet.currentProblem ===
-														this.state.problemSet.problems.length - 1 &&
-													this.state.showingAnswer
-														? 'Finish'
-														: this.state.showingAnswer
-														? 'Next Question'
-														: 'Show Answer'
-												}
-												onClick={this.proceedQuestion}
-											/>
-										</div>
 									</div>
 								)}
 
 							{/* finished */}
 							{this.state.problemSet.executionDate &&
 								this.state.problemSet.currentProblem === null && (
-									<div>FINISHED</div>
+									<div class="v-center-content h-100">
+										This problem set was finished!
+									</div>
 								)}
 						</div>
 					</div>
