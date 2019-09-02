@@ -5,9 +5,11 @@ import {
 	teacherFetchProblemSet,
 	addProblem,
 	executeProblemSet,
-	startNextQuestion
+	startNextQuestion,
+	stopThisQuestion
 } from '../API'
 import Modal from 'react-modal'
+import { Bar } from 'react-chartjs-2'
 const { isOnlyWhitespace, modalStyle } = require('../helper')
 
 Modal.setAppElement('#root')
@@ -46,6 +48,9 @@ export default class ProblemSetPage extends Component {
 
 		let problemSet = await problemSetResponse.json()
 		this.setState({ problemSet })
+
+		if (problemSet.currentProblem % 1 !== 0)
+			this.setState({ showingAnswer: true })
 	}
 
 	selectProblem = i => {
@@ -143,15 +148,48 @@ export default class ProblemSetPage extends Component {
 				this.fetchProblemSet()
 			}
 		} else {
-			this.setState({ showingAnswer: true })
+			let stopQuestionResponse = await stopThisQuestion(
+				this.state.problemSet.classId
+			)
+
+			if (
+				stopQuestionResponse.status === 200 ||
+				stopQuestionResponse.status === 201
+			) {
+				this.setState({ showingAnswer: true })
+				this.fetchProblemSet()
+			}
 		}
 	}
 
 	render() {
-		let currentProblem =
-			this.state.problemSet.currentProblem !== null
-				? this.state.problemSet.problems[this.state.problemSet.currentProblem]
-				: null
+		let currentProblem, data
+
+		if (this.state.problemSet.currentProblem !== null) {
+			currentProblem = this.state.problemSet.problems[
+				Math.floor(this.state.problemSet.currentProblem)
+			]
+
+			let backgroundColor = Array.from(
+				{ length: currentProblem.choices.length },
+				() => 'rgba(255, 99, 132, 0.2)'
+			)
+			backgroundColor[currentProblem.correct] = '#20df8f88'
+
+			data = {
+				labels: letters.slice(0, currentProblem.choices.length),
+				datasets: [
+					{
+						data: currentProblem.choices.map((_, i) => {
+							return currentProblem.responses.filter(res => res.response === i)
+								.length
+						}),
+						backgroundColor,
+						borderWidth: 4
+					}
+				]
+			}
+		}
 
 		let problems =
 			this.state.problemSet.problems &&
@@ -160,12 +198,35 @@ export default class ProblemSetPage extends Component {
 					key={p._id}
 					className={
 						'class-item' +
-						(this.state.problemSet.currentProblem === i ? ' highlight' : '')
+						(this.state.problemSet.currentProblem !== null &&
+						Math.floor(this.state.problemSet.currentProblem) === i
+							? ' highlight'
+							: '')
 					}
 					onClick={() => this.selectProblem(i)}>
 					<td>{p.question}</td>
 				</tr>
 			))
+
+		let chart = (
+			<Bar
+				data={data}
+				options={{
+					legend: false,
+					tooltips: false,
+					scales: {
+						yAxes: [
+							{
+								ticks: {
+									beginAtZero: true,
+									stepSize: 1
+								}
+							}
+						]
+					}
+				}}
+			/>
+		)
 
 		return (
 			<div className="content">
@@ -289,6 +350,9 @@ export default class ProblemSetPage extends Component {
 													<h3>{letters[i] + '. ' + choice}</h3>
 												</div>
 											))}
+										</div>
+										<div className="row">
+											{this.state.showingAnswer && chart}
 										</div>
 									</div>
 								)}

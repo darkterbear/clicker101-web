@@ -7,6 +7,10 @@ import RegistrationPage from './index/RegistrationPage'
 import TeacherClassesPage from './teacher/TeacherClassesPage'
 import TeacherClassPage from './teacher/TeacherClassPage'
 import ProblemSetPage from './teacher/ProblemSetPage'
+import { defaults } from 'react-chartjs-2'
+
+// defaults.global.defaultFontFamily = 'Grantipo Beta 001'
+defaults.global.defaultFontSize = 18
 
 export default class App extends React.Component {
 	render() {

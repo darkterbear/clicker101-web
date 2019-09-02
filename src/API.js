@@ -138,3 +138,17 @@ exports.startNextQuestion = classId => {
 		credentials: 'include'
 	})
 }
+
+exports.stopThisQuestion = classId => {
+	return fetch(BASE_URL + '/api/teachers/stop-this-problem', {
+		method: 'POST',
+		headers: {
+			Accept: 'application/json',
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({
+			classId
+		}),
+		credentials: 'include'
+	})
+}
