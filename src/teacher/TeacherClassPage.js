@@ -68,6 +68,19 @@ export default class TeacherClassPage extends Component {
 	}
 
 	render() {
+		let problemSets =
+			this.state.class.problemSets &&
+			this.state.class.problemSets.map((p, i) => (
+				<tr
+					key={p._id}
+					className="class-item"
+					onClick={() => this.selectProblemSet(i)}>
+					<td>{p.name}</td>
+					<td>{p.problems.length}</td>
+					<td>{formatDate(new Date(p.date))}</td>
+				</tr>
+			))
+
 		return (
 			<div className="content">
 				<Modal
@@ -104,19 +117,7 @@ export default class TeacherClassPage extends Component {
 								<th>Date Created</th>
 							</tr>
 						</thead>
-						<tbody>
-							{this.state.class.problemSets &&
-								this.state.class.problemSets.map((p, i) => (
-									<tr
-										key={p._id}
-										className="class-item"
-										onClick={() => this.selectProblemSet(i)}>
-										<td>{p.name}</td>
-										<td>{p.problems.length}</td>
-										<td>{formatDate(new Date(p.date))}</td>
-									</tr>
-								))}
-						</tbody>
+						<tbody>{problemSets}</tbody>
 					</table>
 				</div>
 			</div>

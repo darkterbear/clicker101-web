@@ -62,6 +62,18 @@ export default class TeacherClassesPage extends Component {
 	}
 
 	render() {
+		let classes = this.state.classes.map((c, i) => (
+			<tr
+				className="class-item"
+				key={c._id}
+				onClick={() => this.selectClass(i)}>
+				<td>{c.name}</td>
+				<td>{c.students.length}</td>
+				<td>{c.problemSets.length}</td>
+				<td>{c.code}</td>
+			</tr>
+		))
+
 		return (
 			<div className="content">
 				<Modal
@@ -101,19 +113,7 @@ export default class TeacherClassesPage extends Component {
 								<th>Code</th>
 							</tr>
 						</thead>
-						<tbody>
-							{this.state.classes.map((c, i) => (
-								<tr
-									className="class-item"
-									key={c._id}
-									onClick={() => this.selectClass(i)}>
-									<td>{c.name}</td>
-									<td>{c.students.length}</td>
-									<td>{c.problemSets.length}</td>
-									<td>{c.code}</td>
-								</tr>
-							))}
-						</tbody>
+						<tbody>{classes}</tbody>
 					</table>
 				</div>
 			</div>

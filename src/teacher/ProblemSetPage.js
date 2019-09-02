@@ -152,6 +152,21 @@ export default class ProblemSetPage extends Component {
 			this.state.problemSet.currentProblem !== null
 				? this.state.problemSet.problems[this.state.problemSet.currentProblem]
 				: null
+
+		let problems =
+			this.state.problemSet.problems &&
+			this.state.problemSet.problems.map((p, i) => (
+				<tr
+					key={p._id}
+					className={
+						'class-item' +
+						(this.state.problemSet.currentProblem === i ? ' highlight' : '')
+					}
+					onClick={() => this.selectProblem(i)}>
+					<td>{p.question}</td>
+				</tr>
+			))
+
 		return (
 			<div className="content">
 				<Modal
@@ -212,12 +227,18 @@ export default class ProblemSetPage extends Component {
 				<div className="container-fluid h-100" style={{ padding: 0 }}>
 					<div className="row" style={{ margin: 0 }}>
 						<h2 className="before-button">{this.state.problemSet.name}</h2>
+
+						{/* Display Add Problem button if set hasn't been executed */}
 						{!this.state.problemSet.executionDate && (
 							<Button text="Add Problem" onClick={this.openNewQuestionModal} />
 						)}
+
+						{/* Display Start Problem Set button if set hasn't been executed */}
 						{!this.state.problemSet.executionDate && (
 							<Button text="Start Problem Set" onClick={this.startProblemSet} />
 						)}
+
+						{/* Display Next Question, Show Answer, and Finish buttons if set is underway */}
 						{this.state.problemSet.executionDate &&
 							this.state.problemSet.currentProblem !== null && (
 								<Button
@@ -242,34 +263,11 @@ export default class ProblemSetPage extends Component {
 										<th>Question</th>
 									</tr>
 								</thead>
-								<tbody>
-									{this.state.problemSet.problems &&
-										this.state.problemSet.problems.map((p, i) => (
-											<tr
-												key={p._id}
-												className={
-													'class-item' +
-													(this.state.problemSet.currentProblem === i
-														? ' highlight'
-														: '')
-												}
-												onClick={() => this.selectProblem(i)}>
-												<td>{p.question}</td>
-											</tr>
-										))}
-								</tbody>
+								<tbody>{problems}</tbody>
 							</table>
 						</div>
 						<div className="col-8">
-							{/* not yet started */}
-							{!this.state.problemSet.executionDate && (
-								<div class="v-center-content h-100">
-									Start this problem set by clicking "Start Problem Set" in the
-									upper left!
-								</div>
-							)}
-
-							{/* underway */}
+							{/* Display problems and choices when underway */}
 							{this.state.problemSet.executionDate &&
 								this.state.problemSet.currentProblem !== null && (
 									<div
@@ -295,7 +293,7 @@ export default class ProblemSetPage extends Component {
 									</div>
 								)}
 
-							{/* finished */}
+							{/* TODO: Display analytics and results when finished */}
 							{this.state.problemSet.executionDate &&
 								this.state.problemSet.currentProblem === null && (
 									<div class="v-center-content h-100">
