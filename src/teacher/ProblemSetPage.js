@@ -6,7 +6,9 @@ import {
 	addProblem,
 	executeProblemSet,
 	startNextProblem,
-	stopThisProblem
+	stopThisProblem,
+	editProblemSetName,
+	deleteProblemSet
 } from '../API'
 import Modal from 'react-modal'
 import { Bar } from 'react-chartjs-2'
@@ -33,7 +35,10 @@ export default class ProblemSetPage extends Component {
 			newProblemModalIsLoading: '',
 			showingAnswer: false,
 			selectedProblem: -1,
-			editingProblem: -1
+			editingProblem: -1,
+			settingsModalOpen: false,
+			settingsModalName: '',
+			settingsModalIsLoading: false
 		}
 	}
 
@@ -67,6 +72,13 @@ export default class ProblemSetPage extends Component {
 		this.setState({ newProblemModalOpen: true })
 	}
 
+	openSettingsModal = () => {
+		this.setState({
+			settingsModalOpen: true,
+			settingsModalName: this.state.problemSet.name
+		})
+	}
+
 	closeNewProblemModal = () => {
 		this.setState({
 			newProblemModalOpen: false,
@@ -76,8 +88,16 @@ export default class ProblemSetPage extends Component {
 		})
 	}
 
+	closeSettingsModal = () => {
+		this.setState({ settingsModalOpen: false, settingsModalName: '' })
+	}
+
 	onNewProblemModalProblemChange = newProblemModalProblem => {
 		this.setState({ newProblemModalProblem })
+	}
+
+	onSettingsModalNameChange = settingsModalName => {
+		this.setState({ settingsModalName })
 	}
 
 	onNewProblemModalChoiceChange = (i, choice) => {
@@ -104,6 +124,33 @@ export default class ProblemSetPage extends Component {
 		this.closeNewProblemModal()
 		this.setState({ newProblemModalIsLoading: false })
 		this.fetchProblemSet()
+	}
+
+	editProblemSetName = async () => {
+		let newName = this.state.settingsModalName
+
+		if (
+			isOnlyWhitespace(newName) ||
+			this.state.settingsModalIsLoading ||
+			newName === this.state.problemSet.name
+		)
+			return
+
+		this.setState({ settingsModalIsLoading: true })
+
+		await editProblemSetName(newName, this.state.problemSet._id)
+
+		this.closeSettingsModal()
+		this.setState({ settingsModalIsLoading: false })
+		this.fetchProblemSet()
+	}
+
+	deleteProblemSet = async () => {
+		await deleteProblemSet(this.state.problemSet._id)
+		this.closeSettingsModal()
+		this.props.history.push(
+			'/teacher/class?id=' + this.state.problemSet.classId
+		)
 	}
 
 	isValidInput = () => {
@@ -288,6 +335,7 @@ export default class ProblemSetPage extends Component {
 
 		return (
 			<div className="content">
+				{/* New problem modal */}
 				<Modal
 					isOpen={this.state.newProblemModalOpen}
 					onRequestClose={this.closeNewProblemModal}
@@ -336,9 +384,35 @@ export default class ProblemSetPage extends Component {
 						disabled={this.state.newProblemModalChoices.length >= 6}
 					/>
 					<Button text="Cancel" onClick={this.closeNewProblemModal} />
-					{this.state.newProblemModalIsLoading && (
-						<h5 className="">Loading...</h5>
-					)}
+					{this.state.newProblemModalIsLoading && <h5>Loading...</h5>}
+				</Modal>
+
+				{/* Settings modal */}
+				<Modal
+					isOpen={this.state.settingsModalOpen}
+					onRequestClose={this.closeSettingsModal}
+					style={modalStyle}
+					contentLabel="Problem Set Settings">
+					<h3>Problem Set Settings</h3>
+					<Textbox
+						placeholder="Problem Set Name"
+						className="full-width"
+						text={this.state.settingsModalName}
+						onTextChange={this.onSettingsModalNameChange}
+						onEnter={this.editProblemSetName}
+					/>
+					<Button
+						text="Save"
+						onClick={this.editProblemSetName}
+						disabled={isOnlyWhitespace(this.state.settingsModalName)}
+					/>
+					<Button
+						text="Delete Problem Set"
+						style={{ backgroundColor: '#f95757' }}
+						onClick={this.deleteProblemSet}
+					/>
+					<Button text="Cancel" onClick={this.closeSettingsModal} />
+					{this.state.settingsModalIsLoading && <h5>Loading...</h5>}
 				</Modal>
 				<div className="container-fluid h-100" style={{ padding: 0 }}>
 					<div className="row" style={{ margin: 0 }}>
@@ -370,6 +444,11 @@ export default class ProblemSetPage extends Component {
 									onClick={this.proceedProblem}
 								/>
 							)}
+						<Button
+							text="Settings"
+							onClick={this.openSettingsModal}
+							className="right"
+						/>
 					</div>
 					<div className="row" style={{ height: 'calc(100% - 3.1875rem)' }}>
 						<div className="col-4">

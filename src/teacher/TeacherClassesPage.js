@@ -94,9 +94,7 @@ export default class TeacherClassesPage extends Component {
 						disabled={isOnlyWhitespace(this.state.newClassModalName)}
 					/>
 					<Button text="Cancel" onClick={this.closeNewClassModal} />
-					{this.state.newClassModalIsLoading && (
-						<h5 className="">Loading...</h5>
-					)}
+					{this.state.newClassModalIsLoading && <h5>Loading...</h5>}
 				</Modal>
 				<div className="container-fluid" style={{ padding: 0 }}>
 					<div className="row" style={{ margin: 0 }}>

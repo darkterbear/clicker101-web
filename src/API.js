@@ -181,3 +181,32 @@ exports.deleteClass = classId => {
 		credentials: 'include'
 	})
 }
+
+exports.editProblemSetName = (name, problemSetId) => {
+	return fetch(BASE_URL + '/api/teachers/edit-problem-set-name', {
+		method: 'POST',
+		headers: {
+			Accept: 'application/json',
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({
+			name,
+			problemSetId
+		}),
+		credentials: 'include'
+	})
+}
+
+exports.deleteProblemSet = problemSetId => {
+	return fetch(BASE_URL + '/api/teachers/delete-problem-set', {
+		method: 'POST',
+		headers: {
+			Accept: 'application/json',
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({
+			problemSetId
+		}),
+		credentials: 'include'
+	})
+}

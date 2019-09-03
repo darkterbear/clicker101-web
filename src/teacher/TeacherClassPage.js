@@ -98,6 +98,7 @@ export default class TeacherClassPage extends Component {
 			newName === this.state.class.name
 		)
 			return
+		this.setState({ settingsModalIsLoading: true })
 
 		await editClassName(newName, this.state.class._id)
 
@@ -147,7 +148,7 @@ export default class TeacherClassPage extends Component {
 						disabled={isOnlyWhitespace(this.state.newPSModalName)}
 					/>
 					<Button text="Cancel" onClick={this.closeNewPSModal} />
-					{this.state.newPSModalIsLoading && <h5 className="">Loading...</h5>}
+					{this.state.newPSModalIsLoading && <h5>Loading...</h5>}
 				</Modal>
 				{/* Settings modal */}
 				<Modal
@@ -174,9 +175,7 @@ export default class TeacherClassPage extends Component {
 						onClick={this.deleteClass}
 					/>
 					<Button text="Cancel" onClick={this.closeSettingsModal} />
-					{this.state.settingsModalIsLoading && (
-						<h5 className="">Loading...</h5>
-					)}
+					{this.state.settingsModalIsLoading && <h5>Loading...</h5>}
 				</Modal>
 				<div className="container-fluid" style={{ padding: 0 }}>
 					<div className="row" style={{ margin: 0 }}>
