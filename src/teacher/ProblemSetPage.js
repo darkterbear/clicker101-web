@@ -30,7 +30,8 @@ export default class ProblemSetPage extends Component {
 			newQuestionModalChoices: ['', ''],
 			newQuestionModalCorrect: -1,
 			newQuestionModalIsLoading: '',
-			showingAnswer: false
+			showingAnswer: false,
+			selectedQuestion: -1
 		}
 	}
 
@@ -54,7 +55,9 @@ export default class ProblemSetPage extends Component {
 	}
 
 	selectProblem = i => {
-		// TODO: opens modal for editing problem (we're not there yet)
+		if (this.state.selectedQuestion === i)
+			this.setState({ selectedQuestion: -1 })
+		else this.setState({ selectedQuestion: i })
 	}
 
 	openNewQuestionModal = () => {
@@ -163,7 +166,7 @@ export default class ProblemSetPage extends Component {
 	}
 
 	render() {
-		let currentProblem, data
+		let currentProblem, questionData, resultData
 
 		if (this.state.problemSet.currentProblem !== null) {
 			currentProblem = this.state.problemSet.problems[
@@ -176,13 +179,41 @@ export default class ProblemSetPage extends Component {
 			)
 			backgroundColor[currentProblem.correct] = '#20df8f88'
 
-			data = {
+			questionData = {
 				labels: letters.slice(0, currentProblem.choices.length),
 				datasets: [
 					{
 						data: currentProblem.choices.map((_, i) => {
 							return currentProblem.responses.filter(res => res.response === i)
 								.length
+						}),
+						backgroundColor,
+						borderWidth: 4
+					}
+				]
+			}
+			console.log(questionData)
+		}
+
+		if (this.state.selectedQuestion >= 0) {
+			let selectedQuestion = this.state.problemSet.problems[
+				this.state.selectedQuestion
+			]
+
+			let backgroundColor = Array.from(
+				{ length: selectedQuestion.choices.length },
+				() => 'rgba(255, 99, 132, 0.2)'
+			)
+			backgroundColor[selectedQuestion.correct] = '#20df8f88'
+
+			resultData = {
+				labels: letters.slice(0, selectedQuestion.choices.length),
+				datasets: [
+					{
+						data: selectedQuestion.choices.map((_, i) => {
+							return selectedQuestion.responses.filter(
+								res => res.response === i
+							).length
 						}),
 						backgroundColor,
 						borderWidth: 4
@@ -198,8 +229,9 @@ export default class ProblemSetPage extends Component {
 					key={p._id}
 					className={
 						'class-item' +
-						(this.state.problemSet.currentProblem !== null &&
-						Math.floor(this.state.problemSet.currentProblem) === i
+						((this.state.problemSet.currentProblem !== null &&
+							Math.floor(this.state.problemSet.currentProblem) === i) ||
+						this.state.selectedQuestion === i
 							? ' highlight'
 							: '')
 					}
@@ -208,12 +240,37 @@ export default class ProblemSetPage extends Component {
 				</tr>
 			))
 
-		let chart = (
+		let questionChart = (
 			<Bar
-				data={data}
+				data={questionData}
 				options={{
 					legend: false,
 					tooltips: false,
+					scales: {
+						yAxes: [
+							{
+								ticks: {
+									beginAtZero: true,
+									stepSize: 1
+								}
+							}
+						]
+					}
+				}}
+			/>
+		)
+
+		let resultsChart = (
+			<Bar
+				data={resultData}
+				options={{
+					legend: false,
+					tooltips: false,
+					title: {
+						display: true,
+						text: `Question ${this.state.selectedQuestion + 1} Results`,
+						fontSize: 24
+					},
 					scales: {
 						yAxes: [
 							{
@@ -304,7 +361,7 @@ export default class ProblemSetPage extends Component {
 							this.state.problemSet.currentProblem !== null && (
 								<Button
 									text={
-										this.state.problemSet.currentProblem ===
+										Math.floor(this.state.problemSet.currentProblem) ===
 											this.state.problemSet.problems.length - 1 &&
 										this.state.showingAnswer
 											? 'Finish'
@@ -352,7 +409,7 @@ export default class ProblemSetPage extends Component {
 											))}
 										</div>
 										<div className="row">
-											{this.state.showingAnswer && chart}
+											{this.state.showingAnswer && questionChart}
 										</div>
 									</div>
 								)}
@@ -361,7 +418,10 @@ export default class ProblemSetPage extends Component {
 							{this.state.problemSet.executionDate &&
 								this.state.problemSet.currentProblem === null && (
 									<div class="v-center-content h-100">
-										This problem set was finished!
+										{this.state.selectedQuestion >= 0 && resultsChart}
+										{this.state.selectedQuestion < 0 && (
+											<h3>Click on a problem to see results</h3>
+										)}
 									</div>
 								)}
 						</div>

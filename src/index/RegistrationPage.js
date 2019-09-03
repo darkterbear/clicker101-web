@@ -8,13 +8,12 @@ export default class RegistrationPage extends Component {
 		super(props)
 
 		this.state = {
-			type: 'student'
+			type: 'student',
+			email: '',
+			name: '',
+			password: '',
+			confirm: ''
 		}
-
-		this.emailRef = React.createRef()
-		this.nameRef = React.createRef()
-		this.passwordRef = React.createRef()
-		this.confirmRef = React.createRef()
 	}
 
 	render() {
@@ -27,28 +26,32 @@ export default class RegistrationPage extends Component {
 					</div>
 					<div className="row justify-content-center">
 						<Textbox
-							ref={this.emailRef}
 							className="center"
 							placeholder={'Email'}
+							text={this.state.email}
+							onTextChange={t => this.setState({ email: t })}
 						/>
 						<Textbox
-							ref={this.nameRef}
 							className="center"
 							placeholder={'Full Name'}
+							text={this.state.name}
+							onTextChange={t => this.setState({ name: t })}
 						/>
 					</div>
 					<div className="row justify-content-center">
 						<Textbox
-							ref={this.passwordRef}
 							className="center"
 							type="password"
 							placeholder={'Password'}
+							text={this.state.password}
+							onTextChange={t => this.setState({ password: t })}
 						/>
 						<Textbox
-							ref={this.confirmRef}
 							className="center"
 							type="password"
 							placeholder={'Confirm Password'}
+							text={this.state.confirm}
+							onTextChange={t => this.setState({ confirm: t })}
 						/>
 					</div>
 					<div className="row justify-content-center">
@@ -82,16 +85,17 @@ export default class RegistrationPage extends Component {
 	}
 
 	register = async () => {
-		let email = this.emailRef.current.getText()
-		let name = this.nameRef.current.getText()
-		let password = this.passwordRef.current.getText()
-		let confirm = this.confirmRef.current.getText()
+		let { email, name, password, confirm } = this.state
 
+		console.log(email)
+		console.log(name)
+		console.log(password)
+		console.log(confirm)
 		if (
 			password === confirm &&
 			!isOnlyWhitespace(name) &&
 			isValidEmail(email) &&
-			!isOnlyWhitespace(name)
+			password.length >= 8
 		) {
 			let registerResponse = await register(
 				email,

@@ -7,11 +7,10 @@ export default class LoginPage extends Component {
 		super(props)
 
 		this.state = {
-			loginFailed: false
+			loginFailed: false,
+			email: '',
+			password: ''
 		}
-
-		this.emailRef = React.createRef()
-		this.passwordRef = React.createRef()
 	}
 
 	render() {
@@ -25,18 +24,20 @@ export default class LoginPage extends Component {
 					<div className="row justify-content-center">
 						<Textbox
 							onEnter={this.login}
-							ref={this.emailRef}
 							className="center"
 							placeholder={'Email'}
+							text={this.state.email}
+							onTextChange={t => this.setState({ email: t })}
 						/>
 					</div>
 					<div className="row justify-content-center">
 						<Textbox
 							onEnter={this.login}
-							ref={this.passwordRef}
 							type="password"
 							className="center"
 							placeholder={'Password'}
+							text={this.state.password}
+							onTextChange={t => this.setState({ password: t })}
 						/>
 					</div>
 					{this.state.loginFailed && (
@@ -54,8 +55,7 @@ export default class LoginPage extends Component {
 
 	login = async () => {
 		this.setState({ loginFailed: false })
-		let email = this.emailRef.current.getText()
-		let password = this.passwordRef.current.getText()
+		let { email, password } = this.state
 		let loginResponse = await authenticate(email, password)
 
 		let status = loginResponse.status
