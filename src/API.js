@@ -152,3 +152,32 @@ exports.stopThisProblem = classId => {
 		credentials: 'include'
 	})
 }
+
+exports.editClassName = (name, classId) => {
+	return fetch(BASE_URL + '/api/teachers/edit-class-name', {
+		method: 'POST',
+		headers: {
+			Accept: 'application/json',
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({
+			name,
+			classId
+		}),
+		credentials: 'include'
+	})
+}
+
+exports.deleteClass = classId => {
+	return fetch(BASE_URL + '/api/teachers/delete-class', {
+		method: 'POST',
+		headers: {
+			Accept: 'application/json',
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({
+			classId
+		}),
+		credentials: 'include'
+	})
+}

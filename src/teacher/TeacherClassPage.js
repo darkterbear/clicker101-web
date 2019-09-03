@@ -1,7 +1,12 @@
 import React, { Component } from 'react'
-import { Button, Textbox } from '../Components'
+import { Button, Textbox, SmallButton } from '../Components'
 import queryString from 'query-string'
-import { teacherFetchClass, createProblemSet } from '../API'
+import {
+	teacherFetchClass,
+	createProblemSet,
+	editClassName,
+	deleteClass
+} from '../API'
 import Modal from 'react-modal'
 const { isOnlyWhitespace, modalStyle, formatDate } = require('../helper')
 
@@ -17,7 +22,10 @@ export default class TeacherClassPage extends Component {
 			},
 			newPSModalOpen: false,
 			newPSModalName: '',
-			newPSModalIsLoading: false
+			newPSModalIsLoading: false,
+			settingsModalOpen: false,
+			settingsModalName: '',
+			settingsModalIsLoading: false
 		}
 	}
 
@@ -47,12 +55,27 @@ export default class TeacherClassPage extends Component {
 		this.setState({ newPSModalOpen: true })
 	}
 
+	openSettingsModal = () => {
+		this.setState({
+			settingsModalOpen: true,
+			settingsModalName: this.state.class.name
+		})
+	}
+
 	closeNewPSModal = () => {
 		this.setState({ newPSModalOpen: false, newPSModalName: '' })
 	}
 
+	closeSettingsModal = () => {
+		this.setState({ settingsModalOpen: false, settingsModalName: '' })
+	}
+
 	onNewPSModalNameChange = newPSModalName => {
 		this.setState({ newPSModalName })
+	}
+
+	onSettingsModalNameChange = settingsModalName => {
+		this.setState({ settingsModalName })
 	}
 
 	createProblemSet = async () => {
@@ -65,6 +88,28 @@ export default class TeacherClassPage extends Component {
 		this.closeNewPSModal()
 		this.setState({ newPSModalIsLoading: false })
 		this.fetchClass()
+	}
+
+	editClassName = async () => {
+		let newName = this.state.settingsModalName
+		if (
+			isOnlyWhitespace(newName) ||
+			this.state.settingsModalIsLoading ||
+			newName === this.state.class.name
+		)
+			return
+
+		await editClassName(newName, this.state.class._id)
+
+		this.closeSettingsModal()
+		this.setState({ settingsModalIsLoading: false })
+		this.fetchClass()
+	}
+
+	deleteClass = async () => {
+		await deleteClass(this.state.class._id)
+		this.closeSettingsModal()
+		this.props.history.push('/teacher/classes')
 	}
 
 	render() {
@@ -83,6 +128,7 @@ export default class TeacherClassPage extends Component {
 
 		return (
 			<div className="content">
+				{/* New problem set modal */}
 				<Modal
 					isOpen={this.state.newPSModalOpen}
 					onRequestClose={this.closeNewPSModal}
@@ -103,10 +149,44 @@ export default class TeacherClassPage extends Component {
 					<Button text="Cancel" onClick={this.closeNewPSModal} />
 					{this.state.newPSModalIsLoading && <h5 className="">Loading...</h5>}
 				</Modal>
+				{/* Settings modal */}
+				<Modal
+					isOpen={this.state.settingsModalOpen}
+					onRequestClose={this.closeSettingsModal}
+					style={modalStyle}
+					contentLabel="Class Settings">
+					<h3>Class Settings</h3>
+					<Textbox
+						placeholder="Class Name"
+						className="full-width"
+						text={this.state.settingsModalName}
+						onTextChange={this.onSettingsModalNameChange}
+						onEnter={this.editClassName}
+					/>
+					<Button
+						text="Save"
+						onClick={this.editClassName}
+						disabled={isOnlyWhitespace(this.state.settingsModalName)}
+					/>
+					<Button
+						text="Delete Class"
+						style={{ backgroundColor: '#f95757' }}
+						onClick={this.deleteClass}
+					/>
+					<Button text="Cancel" onClick={this.closeSettingsModal} />
+					{this.state.settingsModalIsLoading && (
+						<h5 className="">Loading...</h5>
+					)}
+				</Modal>
 				<div className="container-fluid" style={{ padding: 0 }}>
 					<div className="row" style={{ margin: 0 }}>
 						<h2 className="before-button">{this.state.class.name}</h2>
 						<Button text="New Problem Set" onClick={this.openNewPSModal} />
+						<Button
+							text="Settings"
+							onClick={this.openSettingsModal}
+							className="right"
+						/>
 					</div>
 					<table className="table">
 						<thead>

@@ -61,8 +61,6 @@ export default class LoginPage extends Component {
 		else if (status === 201) this.props.history.push('/student/classes')
 		else {
 			this.setState({ loginFailed: true })
-			this.emailRef.current.clear()
-			this.passwordRef.current.clear()
 		}
 	}
 }

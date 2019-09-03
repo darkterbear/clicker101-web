@@ -66,6 +66,10 @@ html button.small.disabled,
 body button.small.disabled {
   color: #888;
 }
+html button.right,
+body button.right {
+  margin-left: auto;
+}
 html input,
 body input {
   display: block;

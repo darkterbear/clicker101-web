@@ -9,8 +9,13 @@ export class Button extends Component {
 	render() {
 		return (
 			<button
-				className={'normal' + (this.props.disabled ? ' disabled' : '')}
-				onClick={this.onClick}>
+				className={
+					this.props.className +
+					' normal' +
+					(this.props.disabled ? ' disabled' : '')
+				}
+				onClick={this.onClick}
+				style={this.props.style}>
 				{this.props.text}
 			</button>
 		)
@@ -22,7 +27,8 @@ export class SmallButton extends Component {
 		return (
 			<button
 				className={'small' + (this.props.disabled ? ' disabled' : '')}
-				onClick={this.props.onClick}>
+				onClick={this.props.onClick}
+				style={this.props.style}>
 				{this.props.text}
 			</button>
 		)
