@@ -93,7 +93,6 @@ export default class TeacherClassPage extends Component {
 						placeholder="Problem Set Name"
 						className="full-width"
 						onTextChange={this.onNewPSModalNameChange}
-						text={this.state.newPSModalName}
 						onEnter={this.createProblemSet}
 					/>
 					<Button

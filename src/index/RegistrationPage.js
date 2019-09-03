@@ -28,13 +28,11 @@ export default class RegistrationPage extends Component {
 						<Textbox
 							className="center"
 							placeholder={'Email'}
-							text={this.state.email}
 							onTextChange={t => this.setState({ email: t })}
 						/>
 						<Textbox
 							className="center"
 							placeholder={'Full Name'}
-							text={this.state.name}
 							onTextChange={t => this.setState({ name: t })}
 						/>
 					</div>
@@ -43,14 +41,12 @@ export default class RegistrationPage extends Component {
 							className="center"
 							type="password"
 							placeholder={'Password'}
-							text={this.state.password}
 							onTextChange={t => this.setState({ password: t })}
 						/>
 						<Textbox
 							className="center"
 							type="password"
 							placeholder={'Confirm Password'}
-							text={this.state.confirm}
 							onTextChange={t => this.setState({ confirm: t })}
 						/>
 					</div>

@@ -21,7 +21,7 @@ export class SmallButton extends Component {
 	render() {
 		return (
 			<button
-				class={'small' + (this.props.disabled ? ' disabled' : '')}
+				className={'small' + (this.props.disabled ? ' disabled' : '')}
 				onClick={this.props.onClick}>
 				{this.props.text}
 			</button>
@@ -62,10 +62,6 @@ export class Textbox extends Component {
 		if (e.key === 'ArrowUp') {
 			if (this.props.onArrowUp) this.props.onArrowUp()
 		}
-	}
-
-	componentWillReceiveProps(newProps) {
-		this.setState({ text: newProps.text })
 	}
 
 	render() {

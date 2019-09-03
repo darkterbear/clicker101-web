@@ -1,12 +1,12 @@
 import React, { Component } from 'react'
-import { Button, Table, Textbox } from '../Components'
+import { Button, Textbox } from '../Components'
 import queryString from 'query-string'
 import {
 	teacherFetchProblemSet,
 	addProblem,
 	executeProblemSet,
-	startNextQuestion,
-	stopThisQuestion
+	startNextProblem,
+	stopThisProblem
 } from '../API'
 import Modal from 'react-modal'
 import { Bar } from 'react-chartjs-2'
@@ -23,15 +23,17 @@ export default class ProblemSetPage extends Component {
 			problemSet: {
 				name: '',
 				problems: [],
-				currentProblem: null
+				currentProblem: null,
+				executionDate: true
 			},
-			newQuestionModalOpen: false,
-			newQuestionModalQuestion: '',
-			newQuestionModalChoices: ['', ''],
-			newQuestionModalCorrect: -1,
-			newQuestionModalIsLoading: '',
+			newProblemModalOpen: false,
+			newProblemModalProblem: '',
+			newProblemModalChoices: ['', ''],
+			newProblemModalCorrect: -1,
+			newProblemModalIsLoading: '',
 			showingAnswer: false,
-			selectedQuestion: -1
+			selectedProblem: -1,
+			editingProblem: -1
 		}
 	}
 
@@ -52,65 +54,66 @@ export default class ProblemSetPage extends Component {
 
 		if (problemSet.currentProblem % 1 !== 0)
 			this.setState({ showingAnswer: true })
+
+		console.log(this.state.problemSet)
 	}
 
 	selectProblem = i => {
-		if (this.state.selectedQuestion === i)
-			this.setState({ selectedQuestion: -1 })
-		else this.setState({ selectedQuestion: i })
+		if (this.state.selectedProblem === i) this.setState({ selectedProblem: -1 })
+		else this.setState({ selectedProblem: i })
 	}
 
-	openNewQuestionModal = () => {
-		this.setState({ newQuestionModalOpen: true })
+	openNewProblemModal = () => {
+		this.setState({ newProblemModalOpen: true })
 	}
 
-	closeNewQuestionModal = () => {
+	closeNewProblemModal = () => {
 		this.setState({
-			newQuestionModalOpen: false,
-			newQuestionModalQuestion: '',
-			newQuestionModalCorrect: -1,
-			newQuestionModalChoices: ['', '']
+			newProblemModalOpen: false,
+			newProblemModalProblem: '',
+			newProblemModalCorrect: -1,
+			newProblemModalChoices: ['', '']
 		})
 	}
 
-	onNewQuestionModalQuestionChange = newQuestionModalQuestion => {
-		this.setState({ newQuestionModalQuestion })
+	onNewProblemModalProblemChange = newProblemModalProblem => {
+		this.setState({ newProblemModalProblem })
 	}
 
-	onNewQuestionModalChoiceChange = (i, choice) => {
-		let choices = this.state.newQuestionModalChoices.slice()
+	onNewProblemModalChoiceChange = (i, choice) => {
+		let choices = this.state.newProblemModalChoices.slice()
 		choices[i] = choice
-		this.setState({ newQuestionModalChoices: choices })
+		this.setState({ newProblemModalChoices: choices })
 	}
 
 	addChoice = () => {
-		let choices = this.state.newQuestionModalChoices.slice()
+		let choices = this.state.newProblemModalChoices.slice()
 		choices.push('')
-		this.setState({ newQuestionModalChoices: choices })
+		this.setState({ newProblemModalChoices: choices })
 	}
 
 	addProblem = async () => {
-		let question = this.state.newQuestionModalQuestion
-		let choices = this.state.newQuestionModalChoices
-		let correct = this.state.newQuestionModalCorrect
+		let problem = this.state.newProblemModalProblem
+		let choices = this.state.newProblemModalChoices
+		let correct = this.state.newProblemModalCorrect
 
-		this.setState({ newQuestionModalIsLoading: true })
+		this.setState({ newProblemModalIsLoading: true })
 
-		await addProblem(this.state.problemSet._id, question, choices, correct)
+		await addProblem(this.state.problemSet._id, problem, choices, correct)
 
-		this.closeNewQuestionModal()
-		this.setState({ newQuestionModalIsLoading: false })
+		this.closeNewProblemModal()
+		this.setState({ newProblemModalIsLoading: false })
 		this.fetchProblemSet()
 	}
 
 	isValidInput = () => {
-		let question = this.state.newQuestionModalQuestion
-		let choices = this.state.newQuestionModalChoices
-		let correct = this.state.newQuestionModalCorrect
+		let problem = this.state.newProblemModalProblem
+		let choices = this.state.newProblemModalChoices
+		let correct = this.state.newProblemModalCorrect
 
 		if (
-			[question, ...choices].some(s => isOnlyWhitespace(s)) ||
-			this.state.newQuestionModalIsLoading ||
+			[problem, ...choices].some(s => isOnlyWhitespace(s)) ||
+			this.state.newProblemModalIsLoading ||
 			correct < 0
 		)
 			return false
@@ -118,18 +121,18 @@ export default class ProblemSetPage extends Component {
 	}
 
 	deleteChoice = i => {
-		let choices = this.state.newQuestionModalChoices.slice()
-		let correct = this.state.newQuestionModalCorrect
+		let choices = this.state.newProblemModalChoices.slice()
+		let correct = this.state.newProblemModalCorrect
 		choices.splice(i, 1)
 		if (correct >= choices.length) correct--
 		this.setState({
-			newQuestionModalChoices: choices,
-			newQuestionModalCorrect: correct
+			newProblemModalChoices: choices,
+			newProblemModalCorrect: correct
 		})
 	}
 
 	chooseCorrect = i => {
-		this.setState({ newQuestionModalCorrect: i })
+		this.setState({ newProblemModalCorrect: i })
 	}
 
 	startProblemSet = async () => {
@@ -141,23 +144,23 @@ export default class ProblemSetPage extends Component {
 		}
 	}
 
-	proceedQuestion = async () => {
+	proceedProblem = async () => {
 		if (this.state.showingAnswer) {
-			let nextQuestionResponse = await startNextQuestion(
+			let nextProblemResponse = await startNextProblem(
 				this.state.problemSet.classId
 			)
-			if (nextQuestionResponse.status === 200) {
+			if (nextProblemResponse.status === 200) {
 				this.setState({ showingAnswer: false })
 				this.fetchProblemSet()
 			}
 		} else {
-			let stopQuestionResponse = await stopThisQuestion(
+			let stopProblemResponse = await stopThisProblem(
 				this.state.problemSet.classId
 			)
 
 			if (
-				stopQuestionResponse.status === 200 ||
-				stopQuestionResponse.status === 201
+				stopProblemResponse.status === 200 ||
+				stopProblemResponse.status === 201
 			) {
 				this.setState({ showingAnswer: true })
 				this.fetchProblemSet()
@@ -166,7 +169,7 @@ export default class ProblemSetPage extends Component {
 	}
 
 	render() {
-		let currentProblem, questionData, resultData
+		let currentProblem, problemData, resultData
 
 		if (this.state.problemSet.currentProblem !== null) {
 			currentProblem = this.state.problemSet.problems[
@@ -179,7 +182,7 @@ export default class ProblemSetPage extends Component {
 			)
 			backgroundColor[currentProblem.correct] = '#20df8f88'
 
-			questionData = {
+			problemData = {
 				labels: letters.slice(0, currentProblem.choices.length),
 				datasets: [
 					{
@@ -192,28 +195,26 @@ export default class ProblemSetPage extends Component {
 					}
 				]
 			}
-			console.log(questionData)
 		}
 
-		if (this.state.selectedQuestion >= 0) {
-			let selectedQuestion = this.state.problemSet.problems[
-				this.state.selectedQuestion
+		if (this.state.selectedProblem >= 0) {
+			let selectedProblem = this.state.problemSet.problems[
+				this.state.selectedProblem
 			]
 
 			let backgroundColor = Array.from(
-				{ length: selectedQuestion.choices.length },
+				{ length: selectedProblem.choices.length },
 				() => 'rgba(255, 99, 132, 0.2)'
 			)
-			backgroundColor[selectedQuestion.correct] = '#20df8f88'
+			backgroundColor[selectedProblem.correct] = '#20df8f88'
 
 			resultData = {
-				labels: letters.slice(0, selectedQuestion.choices.length),
+				labels: letters.slice(0, selectedProblem.choices.length),
 				datasets: [
 					{
-						data: selectedQuestion.choices.map((_, i) => {
-							return selectedQuestion.responses.filter(
-								res => res.response === i
-							).length
+						data: selectedProblem.choices.map((_, i) => {
+							return selectedProblem.responses.filter(res => res.response === i)
+								.length
 						}),
 						backgroundColor,
 						borderWidth: 4
@@ -222,7 +223,7 @@ export default class ProblemSetPage extends Component {
 			}
 		}
 
-		let problems =
+		let questions =
 			this.state.problemSet.problems &&
 			this.state.problemSet.problems.map((p, i) => (
 				<tr
@@ -231,7 +232,7 @@ export default class ProblemSetPage extends Component {
 						'class-item' +
 						((this.state.problemSet.currentProblem !== null &&
 							Math.floor(this.state.problemSet.currentProblem) === i) ||
-						this.state.selectedQuestion === i
+						this.state.selectedProblem === i
 							? ' highlight'
 							: '')
 					}
@@ -240,9 +241,9 @@ export default class ProblemSetPage extends Component {
 				</tr>
 			))
 
-		let questionChart = (
+		let problemChart = (
 			<Bar
-				data={questionData}
+				data={problemData}
 				options={{
 					legend: false,
 					tooltips: false,
@@ -268,7 +269,7 @@ export default class ProblemSetPage extends Component {
 					tooltips: false,
 					title: {
 						display: true,
-						text: `Question ${this.state.selectedQuestion + 1} Results`,
+						text: `Problem ${this.state.selectedProblem + 1} Results`,
 						fontSize: 24
 					},
 					scales: {
@@ -288,37 +289,34 @@ export default class ProblemSetPage extends Component {
 		return (
 			<div className="content">
 				<Modal
-					isOpen={this.state.newQuestionModalOpen}
-					onRequestClose={this.closeNewQuestionModal}
+					isOpen={this.state.newProblemModalOpen}
+					onRequestClose={this.closeNewProblemModal}
 					style={modalStyle}
 					contentLabel="Add Problem">
 					<h3>Add Problem</h3>
 					<Textbox
 						placeholder="Question"
 						className="full-width"
-						onTextChange={this.onNewQuestionModalQuestionChange}
-						text={this.state.newQuestionModalQuestion}
+						onTextChange={this.onNewProblemModalProblemChange}
 					/>
-					{this.state.newQuestionModalChoices.map((choice, i) => (
-						<div>
+					{this.state.newProblemModalChoices.map((choice, i) => (
+						<div key={i}>
 							<Textbox
-								key={i}
 								className="full-width "
 								placeholder={`Choice ${i + 1}`}
 								onTextChange={choice =>
-									this.onNewQuestionModalChoiceChange(i, choice)
+									this.onNewProblemModalChoiceChange(i, choice)
 								}
-								text={choice}
 								style={{ display: 'inline', width: 'calc(100% - 4rem)' }}
 							/>
 							<i
 								className={`material-icons${
-									this.state.newQuestionModalCorrect === i ? ' green' : ''
+									this.state.newProblemModalCorrect === i ? ' green' : ''
 								}`}
 								onClick={() => this.chooseCorrect(i)}>
 								check
 							</i>
-							{this.state.newQuestionModalChoices.length > 2 && (
+							{this.state.newProblemModalChoices.length > 2 && (
 								<i
 									className="material-icons"
 									onClick={() => this.deleteChoice(i)}>
@@ -335,10 +333,10 @@ export default class ProblemSetPage extends Component {
 					<Button
 						text="Add Choice"
 						onClick={this.addChoice}
-						disabled={this.state.newQuestionModalChoices.length >= 6}
+						disabled={this.state.newProblemModalChoices.length >= 6}
 					/>
-					<Button text="Cancel" onClick={this.closeNewQuestionModal} />
-					{this.state.newQuestionModalIsLoading && (
+					<Button text="Cancel" onClick={this.closeNewProblemModal} />
+					{this.state.newProblemModalIsLoading && (
 						<h5 className="">Loading...</h5>
 					)}
 				</Modal>
@@ -348,7 +346,7 @@ export default class ProblemSetPage extends Component {
 
 						{/* Display Add Problem button if set hasn't been executed */}
 						{!this.state.problemSet.executionDate && (
-							<Button text="Add Problem" onClick={this.openNewQuestionModal} />
+							<Button text="Add Problem" onClick={this.openNewProblemModal} />
 						)}
 
 						{/* Display Start Problem Set button if set hasn't been executed */}
@@ -356,7 +354,7 @@ export default class ProblemSetPage extends Component {
 							<Button text="Start Problem Set" onClick={this.startProblemSet} />
 						)}
 
-						{/* Display Next Question, Show Answer, and Finish buttons if set is underway */}
+						{/* Display Next Problem, Show Answer, and Finish buttons if set is underway */}
 						{this.state.problemSet.executionDate &&
 							this.state.problemSet.currentProblem !== null && (
 								<Button
@@ -366,10 +364,10 @@ export default class ProblemSetPage extends Component {
 										this.state.showingAnswer
 											? 'Finish'
 											: this.state.showingAnswer
-											? 'Next Question'
+											? 'Next Problem'
 											: 'Show Answer'
 									}
-									onClick={this.proceedQuestion}
+									onClick={this.proceedProblem}
 								/>
 							)}
 					</div>
@@ -381,10 +379,21 @@ export default class ProblemSetPage extends Component {
 										<th>Question</th>
 									</tr>
 								</thead>
-								<tbody>{problems}</tbody>
+								<tbody>{questions}</tbody>
 							</table>
 						</div>
 						<div className="col-8">
+							{/* Display editing panel when not yet started */}
+							{!this.state.problemSet.executionDate &&
+								this.state.problemSet.currentProblem === null && (
+									<div className="v-center-content h-100">
+										{this.state.editingProblem >= 0 && <div />}
+										{this.state.editingProblem < 0 && (
+											<h3>Click on a problem to inspect and edit!</h3>
+										)}
+									</div>
+								)}
+
 							{/* Display problems and choices when underway */}
 							{this.state.problemSet.executionDate &&
 								this.state.problemSet.currentProblem !== null && (
@@ -409,17 +418,17 @@ export default class ProblemSetPage extends Component {
 											))}
 										</div>
 										<div className="row">
-											{this.state.showingAnswer && questionChart}
+											{this.state.showingAnswer && problemChart}
 										</div>
 									</div>
 								)}
 
-							{/* TODO: Display analytics and results when finished */}
+							{/* Display analytics and results when finished */}
 							{this.state.problemSet.executionDate &&
 								this.state.problemSet.currentProblem === null && (
-									<div class="v-center-content h-100">
-										{this.state.selectedQuestion >= 0 && resultsChart}
-										{this.state.selectedQuestion < 0 && (
+									<div className="v-center-content h-100">
+										{this.state.selectedProblem >= 0 && resultsChart}
+										{this.state.selectedProblem < 0 && (
 											<h3>Click on a problem to see results</h3>
 										)}
 									</div>

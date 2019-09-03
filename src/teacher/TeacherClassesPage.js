@@ -86,7 +86,6 @@ export default class TeacherClassesPage extends Component {
 						className="full-width"
 						placeholder="Class Name"
 						onTextChange={this.onNewClassModalNameChange}
-						text={this.state.newClassModalName}
 						onEnter={this.createClass}
 					/>
 					<Button

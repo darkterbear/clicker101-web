@@ -26,7 +26,6 @@ export default class LoginPage extends Component {
 							onEnter={this.login}
 							className="center"
 							placeholder={'Email'}
-							text={this.state.email}
 							onTextChange={t => this.setState({ email: t })}
 						/>
 					</div>
@@ -36,7 +35,6 @@ export default class LoginPage extends Component {
 							type="password"
 							className="center"
 							placeholder={'Password'}
-							text={this.state.password}
 							onTextChange={t => this.setState({ password: t })}
 						/>
 					</div>

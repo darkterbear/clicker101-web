@@ -125,7 +125,7 @@ exports.executeProblemSet = problemSetId => {
 	})
 }
 
-exports.startNextQuestion = classId => {
+exports.startNextProblem = classId => {
 	return fetch(BASE_URL + '/api/teachers/start-next-problem', {
 		method: 'POST',
 		headers: {
@@ -139,7 +139,7 @@ exports.startNextQuestion = classId => {
 	})
 }
 
-exports.stopThisQuestion = classId => {
+exports.stopThisProblem = classId => {
 	return fetch(BASE_URL + '/api/teachers/stop-this-problem', {
 		method: 'POST',
 		headers: {
