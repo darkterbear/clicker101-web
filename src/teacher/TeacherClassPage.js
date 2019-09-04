@@ -122,7 +122,13 @@ export default class TeacherClassPage extends Component {
 					className="class-item"
 					onClick={() => this.selectProblemSet(i)}>
 					<td>{p.name}</td>
-					<td>{p.problems.length}</td>
+					<td>
+						{p.executionDate
+							? p.currentProblem === null
+								? 'Completed'
+								: 'In Progress'
+							: 'Not Started'}
+					</td>
 					<td>{formatDate(new Date(p.date))}</td>
 				</tr>
 			))
@@ -191,7 +197,7 @@ export default class TeacherClassPage extends Component {
 						<thead>
 							<tr>
 								<th>Problem Set Name</th>
-								<th>Problems</th>
+								<th>Status</th>
 								<th>Date Created</th>
 							</tr>
 						</thead>

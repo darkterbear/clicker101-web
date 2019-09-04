@@ -8,7 +8,9 @@ import {
 	startNextProblem,
 	stopThisProblem,
 	editProblemSetName,
-	deleteProblemSet
+	deleteProblemSet,
+	deleteProblem,
+	editProblem
 } from '../API'
 import Modal from 'react-modal'
 import { Bar } from 'react-chartjs-2'
@@ -29,16 +31,21 @@ export default class ProblemSetPage extends Component {
 				executionDate: true
 			},
 			newProblemModalOpen: false,
-			newProblemModalProblem: '',
+			newProblemModalQuestion: '',
 			newProblemModalChoices: ['', ''],
 			newProblemModalCorrect: -1,
 			newProblemModalIsLoading: '',
+
 			showingAnswer: false,
-			selectedProblem: -1,
-			editingProblem: -1,
 			settingsModalOpen: false,
 			settingsModalName: '',
-			settingsModalIsLoading: false
+			settingsModalIsLoading: false,
+
+			selectedProblem: -1,
+			selectedProblemEditQuestion: '',
+			selectedProblemEditChoices: [],
+			selectedProblemEditCorrect: -1,
+			editingIsLoading: false
 		}
 	}
 
@@ -64,8 +71,25 @@ export default class ProblemSetPage extends Component {
 	}
 
 	selectProblem = i => {
-		if (this.state.selectedProblem === i) this.setState({ selectedProblem: -1 })
-		else this.setState({ selectedProblem: i })
+		if (this.state.selectedProblem === i)
+			this.setState({
+				selectedProblem: -1,
+				selectedProblemEditQuestion: '',
+				selectedProblemEditChoices: [],
+				selectedProblemEditCorrect: -1
+			})
+		else {
+			let problem = this.state.problemSet.problems[i]
+			let selectedProblemEditQuestion = problem.question
+			let selectedProblemEditChoices = problem.choices
+			let selectedProblemEditCorrect = problem.correct
+			this.setState({
+				selectedProblem: i,
+				selectedProblemEditQuestion,
+				selectedProblemEditChoices,
+				selectedProblemEditCorrect
+			})
+		}
 	}
 
 	openNewProblemModal = () => {
@@ -82,7 +106,7 @@ export default class ProblemSetPage extends Component {
 	closeNewProblemModal = () => {
 		this.setState({
 			newProblemModalOpen: false,
-			newProblemModalProblem: '',
+			newProblemModalQuestion: '',
 			newProblemModalCorrect: -1,
 			newProblemModalChoices: ['', '']
 		})
@@ -92,18 +116,34 @@ export default class ProblemSetPage extends Component {
 		this.setState({ settingsModalOpen: false, settingsModalName: '' })
 	}
 
-	onNewProblemModalProblemChange = newProblemModalProblem => {
-		this.setState({ newProblemModalProblem })
+	onNewProblemModalQuestionChange = newProblemModalQuestion => {
+		this.setState({ newProblemModalQuestion })
 	}
 
 	onSettingsModalNameChange = settingsModalName => {
 		this.setState({ settingsModalName })
 	}
 
+	onEditQuestionChange = selectedProblemEditQuestion => {
+		this.setState({ selectedProblemEditQuestion })
+	}
+
 	onNewProblemModalChoiceChange = (i, choice) => {
 		let choices = this.state.newProblemModalChoices.slice()
 		choices[i] = choice
 		this.setState({ newProblemModalChoices: choices })
+	}
+
+	onEditChoiceChange = (i, choice) => {
+		let choices = this.state.selectedProblemEditChoices.slice()
+		choices[i] = choice
+		this.setState({ selectedProblemEditChoices: choices })
+	}
+
+	editAddChoice = () => {
+		let choices = this.state.selectedProblemEditChoices.slice()
+		choices.push('')
+		this.setState({ selectedProblemEditChoices: choices })
 	}
 
 	addChoice = () => {
@@ -113,13 +153,22 @@ export default class ProblemSetPage extends Component {
 	}
 
 	addProblem = async () => {
-		let problem = this.state.newProblemModalProblem
+		let question = this.state.newProblemModalQuestion
 		let choices = this.state.newProblemModalChoices
 		let correct = this.state.newProblemModalCorrect
+		if (
+			!this.isValidInput(
+				question,
+				choices,
+				correct,
+				this.state.newProblemModalIsLoading
+			)
+		)
+			return
 
 		this.setState({ newProblemModalIsLoading: true })
 
-		await addProblem(this.state.problemSet._id, problem, choices, correct)
+		await addProblem(this.state.problemSet._id, question, choices, correct)
 
 		this.closeNewProblemModal()
 		this.setState({ newProblemModalIsLoading: false })
@@ -153,14 +202,52 @@ export default class ProblemSetPage extends Component {
 		)
 	}
 
-	isValidInput = () => {
-		let problem = this.state.newProblemModalProblem
-		let choices = this.state.newProblemModalChoices
-		let correct = this.state.newProblemModalCorrect
+	deleteProblem = async () => {
+		await deleteProblem(this.state.problemSet._id, this.state.selectedProblem)
+		this.setState(
+			{
+				selectedProblem: -1,
+				selectedProblemEditQuestion: '',
+				selectedProblemEditChoices: [],
+				selectedProblemEditCorrect: -1
+			},
+			() => this.fetchProblemSet()
+		)
+	}
+
+	saveEditProblem = async () => {
+		let question = this.state.selectedProblemEditQuestion
+		let choices = this.state.selectedProblemEditChoices
+		let correct = this.state.selectedProblemEditCorrect
 
 		if (
-			[problem, ...choices].some(s => isOnlyWhitespace(s)) ||
-			this.state.newProblemModalIsLoading ||
+			!this.isValidInput(
+				question,
+				choices,
+				correct,
+				this.state.editingIsLoading
+			)
+		)
+			return
+
+		this.setState({ editingIsLoading: true })
+
+		await editProblem(
+			this.state.problemSet._id,
+			this.state.selectedProblem,
+			question,
+			choices,
+			correct
+		)
+
+		this.setState({ editingIsLoading: false })
+		this.fetchProblemSet()
+	}
+
+	isValidInput = (question, choices, correct, isLoading) => {
+		if (
+			[question, ...choices].some(s => isOnlyWhitespace(s)) ||
+			isLoading ||
 			correct < 0
 		)
 			return false
@@ -168,18 +255,35 @@ export default class ProblemSetPage extends Component {
 	}
 
 	deleteChoice = i => {
+		let hasSelectedCorrect = this.state.newProblemModalCorrect >= 0
 		let choices = this.state.newProblemModalChoices.slice()
-		let correct = this.state.newProblemModalCorrect
+		let correct = this.state.newProblemModalCorrect - 1
 		choices.splice(i, 1)
-		if (correct >= choices.length) correct--
+		if (correct < 0 && hasSelectedCorrect) correct = 0
 		this.setState({
 			newProblemModalChoices: choices,
 			newProblemModalCorrect: correct
 		})
 	}
 
+	editDeleteChoice = i => {
+		let hasSelectedCorrect = this.state.selectedProblemEditCorrect >= 0
+		let choices = this.state.selectedProblemEditChoices.slice()
+		let correct = this.state.selectedProblemEditCorrect - 1
+		choices.splice(i, 1)
+		if (correct < 0 && hasSelectedCorrect) correct = 0
+		this.setState({
+			selectedProblemEditChoices: choices,
+			selectedProblemEditCorrect: correct
+		})
+	}
+
 	chooseCorrect = i => {
 		this.setState({ newProblemModalCorrect: i })
+	}
+
+	editChooseCorrect = i => {
+		this.setState({ selectedProblemEditCorrect: i })
 	}
 
 	startProblemSet = async () => {
@@ -216,7 +320,7 @@ export default class ProblemSetPage extends Component {
 	}
 
 	render() {
-		let currentProblem, problemData, resultData
+		let currentProblem, problemData, resultData, selectedProblem
 
 		if (this.state.problemSet.currentProblem !== null) {
 			currentProblem = this.state.problemSet.problems[
@@ -245,7 +349,7 @@ export default class ProblemSetPage extends Component {
 		}
 
 		if (this.state.selectedProblem >= 0) {
-			let selectedProblem = this.state.problemSet.problems[
+			selectedProblem = this.state.problemSet.problems[
 				this.state.selectedProblem
 			]
 
@@ -340,12 +444,12 @@ export default class ProblemSetPage extends Component {
 					isOpen={this.state.newProblemModalOpen}
 					onRequestClose={this.closeNewProblemModal}
 					style={modalStyle}
-					contentLabel="Add Problem">
-					<h3>Add Problem</h3>
+					contentLabel="New Problem">
+					<h3>New Problem</h3>
 					<Textbox
 						placeholder="Question"
 						className="full-width"
-						onTextChange={this.onNewProblemModalProblemChange}
+						onTextChange={this.onNewProblemModalQuestionChange}
 					/>
 					{this.state.newProblemModalChoices.map((choice, i) => (
 						<div key={i}>
@@ -355,6 +459,7 @@ export default class ProblemSetPage extends Component {
 								onTextChange={choice =>
 									this.onNewProblemModalChoiceChange(i, choice)
 								}
+								text={this.state.newProblemModalChoices[i]}
 								style={{ display: 'inline', width: 'calc(100% - 4rem)' }}
 							/>
 							<i
@@ -374,9 +479,16 @@ export default class ProblemSetPage extends Component {
 						</div>
 					))}
 					<Button
-						text="Add Problem"
+						text="Save"
 						onClick={this.addProblem}
-						disabled={!this.isValidInput()}
+						disabled={
+							!this.isValidInput(
+								this.state.newProblemModalQuestion,
+								this.state.newProblemModalChoices,
+								this.state.newProblemModalCorrect,
+								this.state.newProblemModalIsLoading
+							)
+						}
 					/>
 					<Button
 						text="Add Choice"
@@ -420,7 +532,7 @@ export default class ProblemSetPage extends Component {
 
 						{/* Display Add Problem button if set hasn't been executed */}
 						{!this.state.problemSet.executionDate && (
-							<Button text="Add Problem" onClick={this.openNewProblemModal} />
+							<Button text="New Problem" onClick={this.openNewProblemModal} />
 						)}
 
 						{/* Display Start Problem Set button if set hasn't been executed */}
@@ -466,8 +578,96 @@ export default class ProblemSetPage extends Component {
 							{!this.state.problemSet.executionDate &&
 								this.state.problemSet.currentProblem === null && (
 									<div className="v-center-content h-100">
-										{this.state.editingProblem >= 0 && <div />}
-										{this.state.editingProblem < 0 && (
+										{this.state.selectedProblem >= 0 && (
+											<div
+												className="h-100"
+												style={{ paddingTop: '1rem', width: '100%' }}>
+												<div className="row" style={{ margin: '0' }}>
+													<h3
+														style={{
+															marginTop: '0.5rem',
+															marginRight: '1rem'
+														}}>
+														Editing Problem {this.state.selectedProblem + 1}
+													</h3>
+													<Button
+														text="Add Choice"
+														onClick={this.editAddChoice}
+														disabled={
+															this.state.selectedProblemEditChoices.length >= 6
+														}
+													/>
+													<Button
+														text="Save"
+														className="right"
+														onClick={this.saveEditProblem}
+														disabled={
+															!this.isValidInput(
+																this.state.selectedProblemEditQuestion,
+																this.state.selectedProblemEditChoices,
+																this.state.selectedProblemEditCorrect,
+																this.state.editingIsLoading
+															)
+														}
+													/>
+													<Button
+														text="Delete"
+														style={{ backgroundColor: '#f95757' }}
+														onClick={this.deleteProblem}
+													/>
+												</div>
+												<Textbox
+													style={{ marginTop: '1rem' }}
+													className="full-width"
+													text={this.state.selectedProblemEditQuestion}
+													onTextChange={question => {
+														this.onEditQuestionChange(question)
+													}}
+													placeholder="Question"
+												/>
+												{this.state.selectedProblemEditChoices.map(
+													(choice, i) => (
+														<div key={i}>
+															<Textbox
+																className="full-width"
+																placeholder={`Choice ${i + 1}`}
+																onTextChange={choice => {
+																	this.onEditChoiceChange(i, choice)
+																}}
+																text={choice}
+																style={{
+																	display: 'inline',
+																	width: 'calc(100% - 4rem)'
+																}}
+															/>
+															<i
+																className={`material-icons${
+																	this.state.selectedProblemEditCorrect === i
+																		? ' green'
+																		: ''
+																}`}
+																onClick={() => {
+																	this.editChooseCorrect(i)
+																}}>
+																check
+															</i>
+															{this.state.selectedProblemEditChoices.length >
+																2 && (
+																<i
+																	className="material-icons"
+																	onClick={() => {
+																		this.editDeleteChoice(i)
+																	}}>
+																	close
+																</i>
+															)}
+														</div>
+													)
+												)}
+												{this.state.editingIsLoading && <h5>Loading...</h5>}
+											</div>
+										)}
+										{this.state.selectedProblem < 0 && (
 											<h3>Click on a problem to inspect and edit!</h3>
 										)}
 									</div>

@@ -111,6 +111,45 @@ exports.addProblem = (problemSetId, question, choices, correct) => {
 	})
 }
 
+exports.deleteProblem = (problemSetId, problemNumber) => {
+	return fetch(BASE_URL + '/api/teachers/delete-problem', {
+		method: 'POST',
+		headers: {
+			Accept: 'application/json',
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({
+			problemSetId,
+			problemNumber
+		}),
+		credentials: 'include'
+	})
+}
+
+exports.editProblem = (
+	problemSetId,
+	problemNumber,
+	question,
+	choices,
+	correct
+) => {
+	return fetch(BASE_URL + '/api/teachers/edit-problem', {
+		method: 'POST',
+		headers: {
+			Accept: 'application/json',
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({
+			problemSetId,
+			problemNumber,
+			question,
+			choices,
+			correct
+		}),
+		credentials: 'include'
+	})
+}
+
 exports.executeProblemSet = problemSetId => {
 	return fetch(BASE_URL + '/api/teachers/execute-problem-set', {
 		method: 'POST',

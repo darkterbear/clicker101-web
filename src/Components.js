@@ -70,6 +70,11 @@ export class Textbox extends Component {
 		}
 	}
 
+	// TODO: FIX THIS WITH A SETTEXT METHOD
+	componentWillReceiveProps(newProps) {
+		this.setState({ text: newProps.text })
+	}
+
 	render() {
 		return (
 			<input
