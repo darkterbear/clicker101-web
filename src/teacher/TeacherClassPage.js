@@ -1,12 +1,12 @@
 import React, { Component } from 'react'
-import { Button, Textbox, SmallButton } from '../Components'
+import { Button, Textbox } from '../Components'
 import queryString from 'query-string'
 import {
 	teacherFetchClass,
 	createProblemSet,
 	editClassName,
 	deleteClass
-} from '../API'
+} from '../api/teacher'
 import Modal from 'react-modal'
 const { isOnlyWhitespace, modalStyle, formatDate } = require('../helper')
 
@@ -18,11 +18,13 @@ export default class TeacherClassPage extends Component {
 
 		this.state = {
 			class: {
-				name: ''
+				name: 'Loading...',
+				problemSets: []
 			},
 			newPSModalOpen: false,
 			newPSModalName: '',
 			newPSModalIsLoading: false,
+
 			settingsModalOpen: false,
 			settingsModalName: '',
 			settingsModalIsLoading: false
@@ -116,22 +118,24 @@ export default class TeacherClassPage extends Component {
 	render() {
 		let problemSets =
 			this.state.class.problemSets &&
-			this.state.class.problemSets.map((p, i) => (
-				<tr
-					key={p._id}
-					className="class-item"
-					onClick={() => this.selectProblemSet(i)}>
-					<td>{p.name}</td>
-					<td>
-						{p.executionDate
-							? p.currentProblem === null
-								? 'Completed'
-								: 'In Progress'
-							: 'Not Started'}
-					</td>
-					<td>{formatDate(new Date(p.date))}</td>
-				</tr>
-			))
+			this.state.class.problemSets.map((p, i) => {
+				let status = 'Not Started'
+				if (p.executionDate) {
+					if (p.currentProblem === null) status = 'Completed'
+					else status = 'In Progress'
+				}
+
+				return (
+					<tr
+						key={p._id}
+						className="class-item"
+						onClick={() => this.selectProblemSet(i)}>
+						<td>{p.name}</td>
+						<td>{status}</td>
+						<td>{formatDate(new Date(p.date))}</td>
+					</tr>
+				)
+			})
 
 		return (
 			<div className="content">

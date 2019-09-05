@@ -2,6 +2,10 @@ import React, { Component } from 'react'
 import { Button } from '../Components'
 
 export default class LostPage extends Component {
+	goToHome = () => {
+		this.props.history.push('/')
+	}
+
 	render() {
 		return (
 			<div className="content v-center-content">
@@ -16,9 +20,5 @@ export default class LostPage extends Component {
 				</div>
 			</div>
 		)
-	}
-
-	goToHome = () => {
-		this.props.history.push('/')
 	}
 }

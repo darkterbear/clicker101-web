@@ -2,18 +2,19 @@ import React, { Component } from 'react'
 
 export class Button extends Component {
 	onClick = () => {
-		if (!this.props.disabled || this.props.enableClickWhenDisabled)
+		if (
+			this.props.onClick &&
+			(!this.props.disabled || this.props.enableClickWhenDisabled)
+		)
 			this.props.onClick()
 	}
 
 	render() {
 		return (
 			<button
-				className={
-					this.props.className +
-					' normal' +
-					(this.props.disabled ? ' disabled' : '')
-				}
+				className={`${this.props.className} normal ${
+					this.props.disabled ? 'disabled' : ''
+				}`}
 				onClick={this.onClick}
 				style={this.props.style}>
 				{this.props.text}
@@ -26,7 +27,9 @@ export class SmallButton extends Component {
 	render() {
 		return (
 			<button
-				className={'small' + (this.props.disabled ? ' disabled' : '')}
+				className={`${this.props.className} small ${
+					this.props.disabled ? 'disabled' : ''
+				}`}
 				onClick={this.props.onClick}
 				style={this.props.style}>
 				{this.props.text}
@@ -36,43 +39,23 @@ export class SmallButton extends Component {
 }
 
 export class Textbox extends Component {
-	constructor(props) {
-		super(props)
-
-		this.state = {
-			text: this.props.text || ''
-		}
-	}
-
-	getText = () => {
-		return this.state.text
-	}
-
-	clear = () => {
-		this.setState({ text: '' })
-	}
-
 	handleKeyDown = e => {
-		if (e.key === 'Enter') {
-			if (this.props.onEnter) this.props.onEnter()
+		switch (e.key) {
+			case 'Enter':
+				if (this.props.onEnter) this.props.onEnter()
+				break
+			case 'Tab':
+				if (this.props.onTab) this.props.onTab()
+				break
+			case 'ArrowDown':
+				if (this.props.onArrowDown) this.props.onArrowDown()
+				break
+			case 'ArrowUp':
+				if (this.props.onArrowUp) this.props.onArrowUp()
+				break
+			default:
+				break
 		}
-
-		if (e.key === 'Tab') {
-			if (this.props.onTab) this.props.onTab()
-		}
-
-		if (e.key === 'ArrowDown') {
-			if (this.props.onArrowDown) this.props.onArrowDown()
-		}
-
-		if (e.key === 'ArrowUp') {
-			if (this.props.onArrowUp) this.props.onArrowUp()
-		}
-	}
-
-	// TODO: FIX THIS WITH A SETTEXT METHOD
-	componentWillReceiveProps(newProps) {
-		this.setState({ text: newProps.text })
 	}
 
 	render() {
@@ -83,7 +66,7 @@ export class Textbox extends Component {
 				type={this.props.type}
 				className={this.props.className}
 				placeholder={this.props.placeholder}
-				value={this.state.text}
+				value={this.props.text}
 				onChange={e => {
 					this.setState({ text: e.target.value })
 					if (this.props.onTextChange) this.props.onTextChange(e.target.value)

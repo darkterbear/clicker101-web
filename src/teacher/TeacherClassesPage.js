@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Button, Textbox } from '../Components'
-import { teacherFetchClasses, createClass } from '../API'
+import { teacherFetchClasses, createClass } from '../api/teacher'
 import Modal from 'react-modal'
 const { isOnlyWhitespace, modalStyle } = require('../helper')
 

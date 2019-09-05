@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Button, Textbox } from '../Components'
 import { isValidEmail, isOnlyWhitespace } from '../helper'
-import { register } from '../API'
+import { register } from '../api/index'
 
 export default class RegistrationPage extends Component {
 	constructor(props) {
@@ -13,6 +13,34 @@ export default class RegistrationPage extends Component {
 			name: '',
 			password: '',
 			confirm: ''
+		}
+	}
+
+	changeType = type => {
+		this.setState({ type })
+	}
+
+	register = async () => {
+		let { email, name, password, confirm } = this.state
+
+		if (
+			password === confirm &&
+			!isOnlyWhitespace(name) &&
+			isValidEmail(email) &&
+			password.length >= 8
+		) {
+			let registerResponse = await register(
+				email,
+				name,
+				password,
+				this.state.type
+			)
+
+			if (registerResponse.status === 200) {
+				if (this.state.type === 'teacher')
+					this.props.history.push('/teacher/classes')
+				else this.props.history.push('/student/classes')
+			}
 		}
 	}
 
@@ -74,37 +102,5 @@ export default class RegistrationPage extends Component {
 				</div>
 			</div>
 		)
-	}
-
-	changeType = type => {
-		this.setState({ type })
-	}
-
-	register = async () => {
-		let { email, name, password, confirm } = this.state
-
-		console.log(email)
-		console.log(name)
-		console.log(password)
-		console.log(confirm)
-		if (
-			password === confirm &&
-			!isOnlyWhitespace(name) &&
-			isValidEmail(email) &&
-			password.length >= 8
-		) {
-			let registerResponse = await register(
-				email,
-				name,
-				password,
-				this.state.type
-			)
-
-			if (registerResponse.status === 200) {
-				if (this.state.type === 'teacher')
-					this.props.history.push('/teacher/classes')
-				else this.props.history.push('/student/classes')
-			}
-		}
 	}
 }

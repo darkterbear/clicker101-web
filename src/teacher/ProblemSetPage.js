@@ -11,7 +11,7 @@ import {
 	deleteProblemSet,
 	deleteProblem,
 	editProblem
-} from '../API'
+} from '../api/teacher'
 import Modal from 'react-modal'
 import { Bar } from 'react-chartjs-2'
 const { isOnlyWhitespace, modalStyle } = require('../helper')
@@ -25,22 +25,28 @@ export default class ProblemSetPage extends Component {
 
 		this.state = {
 			problemSet: {
-				name: '',
+				name: 'Loading...',
 				problems: [],
 				currentProblem: null,
 				executionDate: true
 			},
+
+			// execution
+			showingAnswer: false,
+
+			// new problem
 			newProblemModalOpen: false,
 			newProblemModalQuestion: '',
 			newProblemModalChoices: ['', ''],
 			newProblemModalCorrect: -1,
 			newProblemModalIsLoading: '',
 
-			showingAnswer: false,
+			// settings
 			settingsModalOpen: false,
 			settingsModalName: '',
 			settingsModalIsLoading: false,
 
+			// problem selection for editing and viewing
 			selectedProblem: -1,
 			selectedProblemEditQuestion: '',
 			selectedProblemEditChoices: [],
@@ -64,13 +70,13 @@ export default class ProblemSetPage extends Component {
 		let problemSet = await problemSetResponse.json()
 		this.setState({ problemSet })
 
+		// if problem has stopped, show answer
 		if (problemSet.currentProblem % 1 !== 0)
 			this.setState({ showingAnswer: true })
-
-		console.log(this.state.problemSet)
 	}
 
 	selectProblem = i => {
+		// if same problem is selected, set selected to none
 		if (this.state.selectedProblem === i)
 			this.setState({
 				selectedProblem: -1,
@@ -92,15 +98,19 @@ export default class ProblemSetPage extends Component {
 		}
 	}
 
-	openNewProblemModal = () => {
-		this.setState({ newProblemModalOpen: true })
+	isValidInput = (question, choices, correct, isLoading) => {
+		if (
+			[question, ...choices].some(s => isOnlyWhitespace(s)) ||
+			isLoading ||
+			correct < 0
+		)
+			return false
+		return true
 	}
 
-	openSettingsModal = () => {
-		this.setState({
-			settingsModalOpen: true,
-			settingsModalName: this.state.problemSet.name
-		})
+	// new problem modal control
+	openNewProblemModal = () => {
+		this.setState({ newProblemModalOpen: true })
 	}
 
 	closeNewProblemModal = () => {
@@ -112,44 +122,36 @@ export default class ProblemSetPage extends Component {
 		})
 	}
 
-	closeSettingsModal = () => {
-		this.setState({ settingsModalOpen: false, settingsModalName: '' })
-	}
-
-	onNewProblemModalQuestionChange = newProblemModalQuestion => {
-		this.setState({ newProblemModalQuestion })
-	}
-
-	onSettingsModalNameChange = settingsModalName => {
-		this.setState({ settingsModalName })
-	}
-
-	onEditQuestionChange = selectedProblemEditQuestion => {
-		this.setState({ selectedProblemEditQuestion })
-	}
-
 	onNewProblemModalChoiceChange = (i, choice) => {
 		let choices = this.state.newProblemModalChoices.slice()
 		choices[i] = choice
 		this.setState({ newProblemModalChoices: choices })
 	}
 
-	onEditChoiceChange = (i, choice) => {
-		let choices = this.state.selectedProblemEditChoices.slice()
-		choices[i] = choice
-		this.setState({ selectedProblemEditChoices: choices })
+	onNewProblemModalQuestionChange = newProblemModalQuestion => {
+		this.setState({ newProblemModalQuestion })
 	}
 
-	editAddChoice = () => {
-		let choices = this.state.selectedProblemEditChoices.slice()
-		choices.push('')
-		this.setState({ selectedProblemEditChoices: choices })
-	}
-
-	addChoice = () => {
+	newProblemAddChoice = () => {
 		let choices = this.state.newProblemModalChoices.slice()
 		choices.push('')
 		this.setState({ newProblemModalChoices: choices })
+	}
+
+	newProblemDeleteChoice = i => {
+		let hasSelectedCorrect = this.state.newProblemModalCorrect >= 0
+		let choices = this.state.newProblemModalChoices.slice()
+		let correct = this.state.newProblemModalCorrect - 1
+		choices.splice(i, 1)
+		if (correct < 0 && hasSelectedCorrect) correct = 0
+		this.setState({
+			newProblemModalChoices: choices,
+			newProblemModalCorrect: correct
+		})
+	}
+
+	newProblemChooseCorrect = i => {
+		this.setState({ newProblemModalCorrect: i })
 	}
 
 	addProblem = async () => {
@@ -175,31 +177,37 @@ export default class ProblemSetPage extends Component {
 		this.fetchProblemSet()
 	}
 
-	editProblemSetName = async () => {
-		let newName = this.state.settingsModalName
-
-		if (
-			isOnlyWhitespace(newName) ||
-			this.state.settingsModalIsLoading ||
-			newName === this.state.problemSet.name
-		)
-			return
-
-		this.setState({ settingsModalIsLoading: true })
-
-		await editProblemSetName(newName, this.state.problemSet._id)
-
-		this.closeSettingsModal()
-		this.setState({ settingsModalIsLoading: false })
-		this.fetchProblemSet()
+	// edit problem modal control
+	onEditQuestionChange = selectedProblemEditQuestion => {
+		this.setState({ selectedProblemEditQuestion })
 	}
 
-	deleteProblemSet = async () => {
-		await deleteProblemSet(this.state.problemSet._id)
-		this.closeSettingsModal()
-		this.props.history.push(
-			'/teacher/class?id=' + this.state.problemSet.classId
-		)
+	onEditChoiceChange = (i, choice) => {
+		let choices = this.state.selectedProblemEditChoices.slice()
+		choices[i] = choice
+		this.setState({ selectedProblemEditChoices: choices })
+	}
+
+	editAddChoice = () => {
+		let choices = this.state.selectedProblemEditChoices.slice()
+		choices.push('')
+		this.setState({ selectedProblemEditChoices: choices })
+	}
+
+	editDeleteChoice = i => {
+		let hasSelectedCorrect = this.state.selectedProblemEditCorrect >= 0
+		let choices = this.state.selectedProblemEditChoices.slice()
+		let correct = this.state.selectedProblemEditCorrect - 1
+		choices.splice(i, 1)
+		if (correct < 0 && hasSelectedCorrect) correct = 0
+		this.setState({
+			selectedProblemEditChoices: choices,
+			selectedProblemEditCorrect: correct
+		})
+	}
+
+	editChooseCorrect = i => {
+		this.setState({ selectedProblemEditCorrect: i })
 	}
 
 	deleteProblem = async () => {
@@ -244,48 +252,50 @@ export default class ProblemSetPage extends Component {
 		this.fetchProblemSet()
 	}
 
-	isValidInput = (question, choices, correct, isLoading) => {
+	// settings modal control
+	openSettingsModal = () => {
+		this.setState({
+			settingsModalOpen: true,
+			settingsModalName: this.state.problemSet.name
+		})
+	}
+
+	closeSettingsModal = () => {
+		this.setState({ settingsModalOpen: false, settingsModalName: '' })
+	}
+
+	onSettingsModalNameChange = settingsModalName => {
+		this.setState({ settingsModalName })
+	}
+
+	editProblemSetName = async () => {
+		let newName = this.state.settingsModalName
+
 		if (
-			[question, ...choices].some(s => isOnlyWhitespace(s)) ||
-			isLoading ||
-			correct < 0
+			isOnlyWhitespace(newName) ||
+			this.state.settingsModalIsLoading ||
+			newName === this.state.problemSet.name
 		)
-			return false
-		return true
+			return
+
+		this.setState({ settingsModalIsLoading: true })
+
+		await editProblemSetName(newName, this.state.problemSet._id)
+
+		this.closeSettingsModal()
+		this.setState({ settingsModalIsLoading: false })
+		this.fetchProblemSet()
 	}
 
-	deleteChoice = i => {
-		let hasSelectedCorrect = this.state.newProblemModalCorrect >= 0
-		let choices = this.state.newProblemModalChoices.slice()
-		let correct = this.state.newProblemModalCorrect - 1
-		choices.splice(i, 1)
-		if (correct < 0 && hasSelectedCorrect) correct = 0
-		this.setState({
-			newProblemModalChoices: choices,
-			newProblemModalCorrect: correct
-		})
+	deleteProblemSet = async () => {
+		await deleteProblemSet(this.state.problemSet._id)
+		this.closeSettingsModal()
+		this.props.history.push(
+			'/teacher/class?id=' + this.state.problemSet.classId
+		)
 	}
 
-	editDeleteChoice = i => {
-		let hasSelectedCorrect = this.state.selectedProblemEditCorrect >= 0
-		let choices = this.state.selectedProblemEditChoices.slice()
-		let correct = this.state.selectedProblemEditCorrect - 1
-		choices.splice(i, 1)
-		if (correct < 0 && hasSelectedCorrect) correct = 0
-		this.setState({
-			selectedProblemEditChoices: choices,
-			selectedProblemEditCorrect: correct
-		})
-	}
-
-	chooseCorrect = i => {
-		this.setState({ newProblemModalCorrect: i })
-	}
-
-	editChooseCorrect = i => {
-		this.setState({ selectedProblemEditCorrect: i })
-	}
-
+	// execution control
 	startProblemSet = async () => {
 		let executeProblemSetResponse = await executeProblemSet(
 			this.state.problemSet._id
@@ -296,37 +306,30 @@ export default class ProblemSetPage extends Component {
 	}
 
 	proceedProblem = async () => {
-		if (this.state.showingAnswer) {
-			let nextProblemResponse = await startNextProblem(
-				this.state.problemSet.classId
-			)
-			if (nextProblemResponse.status === 200) {
-				this.setState({ showingAnswer: false })
-				this.fetchProblemSet()
-			}
-		} else {
-			let stopProblemResponse = await stopThisProblem(
-				this.state.problemSet.classId
-			)
+		let proceedFunction = this.state.showingAnswer
+			? startNextProblem
+			: stopThisProblem
+		let showingAnswer = this.state.showingAnswer ? false : true
 
-			if (
-				stopProblemResponse.status === 200 ||
-				stopProblemResponse.status === 201
-			) {
-				this.setState({ showingAnswer: true })
-				this.fetchProblemSet()
-			}
+		let proceedResponse = await proceedFunction(this.state.problemSet.classId)
+
+		if (proceedResponse.status === 200) {
+			this.setState({ showingAnswer })
+			this.fetchProblemSet()
 		}
 	}
 
 	render() {
-		let currentProblem, problemData, resultData, selectedProblem
+		let currentProblem, problemData, selectedProblem, resultData
 
+		// execution, current problem
 		if (this.state.problemSet.currentProblem !== null) {
+			// general
 			currentProblem = this.state.problemSet.problems[
 				Math.floor(this.state.problemSet.currentProblem)
 			]
 
+			// immediate results
 			let backgroundColor = Array.from(
 				{ length: currentProblem.choices.length },
 				() => 'rgba(255, 99, 132, 0.2)'
@@ -348,11 +351,17 @@ export default class ProblemSetPage extends Component {
 			}
 		}
 
-		if (this.state.selectedProblem >= 0) {
+		// editing and viewing, selected problem
+		if (
+			this.state.selectedProblem >= 0 &&
+			this.state.selectedProblem < this.state.problemSet.problems.length
+		) {
+			// general
 			selectedProblem = this.state.problemSet.problems[
 				this.state.selectedProblem
 			]
 
+			// viewing results
 			let backgroundColor = Array.from(
 				{ length: selectedProblem.choices.length },
 				() => 'rgba(255, 99, 132, 0.2)'
@@ -459,20 +468,20 @@ export default class ProblemSetPage extends Component {
 								onTextChange={choice =>
 									this.onNewProblemModalChoiceChange(i, choice)
 								}
-								text={this.state.newProblemModalChoices[i]}
+								text={choice}
 								style={{ display: 'inline', width: 'calc(100% - 4rem)' }}
 							/>
 							<i
 								className={`material-icons${
 									this.state.newProblemModalCorrect === i ? ' green' : ''
 								}`}
-								onClick={() => this.chooseCorrect(i)}>
+								onClick={() => this.newProblemChooseCorrect(i)}>
 								check
 							</i>
 							{this.state.newProblemModalChoices.length > 2 && (
 								<i
 									className="material-icons"
-									onClick={() => this.deleteChoice(i)}>
+									onClick={() => this.newProblemDeleteChoice(i)}>
 									close
 								</i>
 							)}
@@ -492,7 +501,7 @@ export default class ProblemSetPage extends Component {
 					/>
 					<Button
 						text="Add Choice"
-						onClick={this.addChoice}
+						onClick={this.newProblemAddChoice}
 						disabled={this.state.newProblemModalChoices.length >= 6}
 					/>
 					<Button text="Cancel" onClick={this.closeNewProblemModal} />
@@ -575,136 +584,136 @@ export default class ProblemSetPage extends Component {
 						</div>
 						<div className="col-8">
 							{/* Display editing panel when not yet started */}
-							{!this.state.problemSet.executionDate &&
-								this.state.problemSet.currentProblem === null && (
-									<div className="v-center-content h-100">
-										{this.state.selectedProblem >= 0 && (
-											<div
-												className="h-100"
-												style={{ paddingTop: '1rem', width: '100%' }}>
-												<div className="row" style={{ margin: '0' }}>
-													<h3
-														style={{
-															marginTop: '0.5rem',
-															marginRight: '1rem'
-														}}>
-														Editing Problem {this.state.selectedProblem + 1}
-													</h3>
-													<Button
-														text="Add Choice"
-														onClick={this.editAddChoice}
-														disabled={
-															this.state.selectedProblemEditChoices.length >= 6
-														}
-													/>
-													<Button
-														text="Save"
-														className="right"
-														onClick={this.saveEditProblem}
-														disabled={
-															!this.isValidInput(
-																this.state.selectedProblemEditQuestion,
-																this.state.selectedProblemEditChoices,
-																this.state.selectedProblemEditCorrect,
-																this.state.editingIsLoading
-															)
-														}
-													/>
-													<Button
-														text="Delete"
-														style={{ backgroundColor: '#f95757' }}
-														onClick={this.deleteProblem}
-													/>
-												</div>
-												<Textbox
-													style={{ marginTop: '1rem' }}
-													className="full-width"
-													text={this.state.selectedProblemEditQuestion}
-													onTextChange={question => {
-														this.onEditQuestionChange(question)
-													}}
-													placeholder="Question"
+							{!this.state.problemSet.executionDate && (
+								<div className="v-center-content h-100">
+									{selectedProblem && (
+										<div
+											className="h-100"
+											style={{ paddingTop: '1rem', width: '100%' }}>
+											<div className="row" style={{ margin: '0' }}>
+												<h3
+													style={{
+														marginTop: '0.5rem',
+														marginRight: '1rem'
+													}}>
+													Editing Problem {this.state.selectedProblem + 1}
+												</h3>
+												<Button
+													text="Add Choice"
+													onClick={this.editAddChoice}
+													disabled={
+														this.state.selectedProblemEditChoices.length >= 6
+													}
 												/>
-												{this.state.selectedProblemEditChoices.map(
-													(choice, i) => (
-														<div key={i}>
-															<Textbox
-																className="full-width"
-																placeholder={`Choice ${i + 1}`}
-																onTextChange={choice => {
-																	this.onEditChoiceChange(i, choice)
-																}}
-																text={choice}
-																style={{
-																	display: 'inline',
-																	width: 'calc(100% - 4rem)'
-																}}
-															/>
-															<i
-																className={`material-icons${
-																	this.state.selectedProblemEditCorrect === i
-																		? ' green'
-																		: ''
-																}`}
-																onClick={() => {
-																	this.editChooseCorrect(i)
-																}}>
-																check
-															</i>
-															{this.state.selectedProblemEditChoices.length >
-																2 && (
-																<i
-																	className="material-icons"
-																	onClick={() => {
-																		this.editDeleteChoice(i)
-																	}}>
-																	close
-																</i>
-															)}
-														</div>
-													)
-												)}
-												{this.state.editingIsLoading && <h5>Loading...</h5>}
+												<Button
+													text="Save"
+													className="right"
+													onClick={this.saveEditProblem}
+													disabled={
+														!this.isValidInput(
+															this.state.selectedProblemEditQuestion,
+															this.state.selectedProblemEditChoices,
+															this.state.selectedProblemEditCorrect,
+															this.state.editingIsLoading
+														)
+													}
+												/>
+												<Button
+													text="Delete"
+													style={{ backgroundColor: '#f95757' }}
+													onClick={this.deleteProblem}
+												/>
 											</div>
-										)}
-										{this.state.selectedProblem < 0 && (
-											<h3>Click on a problem to inspect and edit!</h3>
-										)}
-									</div>
-								)}
+											<Textbox
+												style={{ marginTop: '1rem' }}
+												className="full-width"
+												text={this.state.selectedProblemEditQuestion}
+												onTextChange={question => {
+													this.onEditQuestionChange(question)
+												}}
+												placeholder="Question"
+											/>
+											{this.state.selectedProblemEditChoices.map(
+												(choice, i) => (
+													<div key={i}>
+														<Textbox
+															className="full-width"
+															placeholder={`Choice ${i + 1}`}
+															onTextChange={choice => {
+																this.onEditChoiceChange(i, choice)
+															}}
+															text={choice}
+															style={{
+																display: 'inline',
+																width: 'calc(100% - 4rem)'
+															}}
+														/>
+														<i
+															className={`material-icons${
+																this.state.selectedProblemEditCorrect === i
+																	? ' green'
+																	: ''
+															}`}
+															onClick={() => {
+																this.editChooseCorrect(i)
+															}}>
+															check
+														</i>
+														{this.state.selectedProblemEditChoices.length >
+															2 && (
+															<i
+																className="material-icons"
+																onClick={() => {
+																	this.editDeleteChoice(i)
+																}}>
+																close
+															</i>
+														)}
+													</div>
+												)
+											)}
+											{this.state.editingIsLoading && <h5>Loading...</h5>}
+										</div>
+									)}
+									{this.state.selectedProblem < 0 && (
+										<h3>Click on a problem to inspect and edit!</h3>
+									)}
+								</div>
+							)}
 
 							{/* Display problems and choices when underway */}
-							{this.state.problemSet.executionDate &&
-								this.state.problemSet.currentProblem !== null && (
-									<div
-										className="container-fluid h-100"
-										style={{ paddingTop: '1rem' }}>
-										<div className="row">
-											<h1>{currentProblem.question}</h1>
-										</div>
-										<div className="row">
-											{currentProblem.choices.map((choice, i) => (
-												<div
-													className={
-														'choice col-md' +
-														(this.state.showingAnswer &&
-														currentProblem.correct === i
-															? ' correct'
-															: '')
-													}>
-													<h3>{letters[i] + '. ' + choice}</h3>
-												</div>
-											))}
-										</div>
-										<div className="row">
-											{this.state.showingAnswer && problemChart}
-										</div>
+							{currentProblem && (
+								<div
+									className="container-fluid h-100"
+									style={{ paddingTop: '1rem' }}>
+									<div className="row">
+										<h1>{currentProblem.question}</h1>
 									</div>
-								)}
+									<div className="row">
+										{currentProblem.choices.map((choice, i) => (
+											<div
+												key={i}
+												className={
+													'choice col-md' +
+													(this.state.showingAnswer &&
+													currentProblem.correct === i
+														? ' correct'
+														: '')
+												}>
+												<h3>{letters[i] + '. ' + choice}</h3>
+											</div>
+										))}
+									</div>
+									<div className="row">
+										{this.state.showingAnswer && problemChart}
+									</div>
+								</div>
+							)}
 
 							{/* Display analytics and results when finished */}
 							{this.state.problemSet.executionDate &&
-								this.state.problemSet.currentProblem === null && (
+								this.state.problemSet._id &&
+								!currentProblem && (
 									<div className="v-center-content h-100">
 										{this.state.selectedProblem >= 0 && resultsChart}
 										{this.state.selectedProblem < 0 && (
