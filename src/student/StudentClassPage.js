@@ -1,7 +1,12 @@
 import React, { Component } from 'react'
 import { Button, Textbox } from '../Components'
 import queryString from 'query-string'
-import { getProblem, answer, studentFetchClass } from '../api/student'
+import {
+	getProblem,
+	answer,
+	studentFetchClass,
+	leaveClass
+} from '../api/student'
 import Modal from 'react-modal'
 const { isOnlyWhitespace, modalStyle, letters } = require('../helper')
 
@@ -65,10 +70,9 @@ export default class StudentClassPage extends Component {
 	}
 
 	leaveClass = async () => {
-		// TODO: implement leave class
-		// await leaveClass(this.state.class._id)
-		// this.closeSettingsModal()
-		// this.props.history.push('/student/classes')
+		await leaveClass(this.state.class._id)
+		this.closeSettingsModal()
+		this.props.history.push('/student/classes')
 	}
 
 	selectAnswer = async i => {

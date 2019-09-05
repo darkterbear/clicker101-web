@@ -8,6 +8,10 @@ exports.joinClass = code => {
 	return POST('/api/students/join-class', { code })
 }
 
+exports.leaveClass = classId => {
+	return POST('/api/students/leave-class', { classId })
+}
+
 exports.studentFetchClass = classId => {
 	return GET('/api/students/fetch-class', { field: 'classId', value: classId })
 }
