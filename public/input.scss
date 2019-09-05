@@ -148,6 +148,21 @@ body {
 		}
 	}
 
+	.clickable {
+		cursor: pointer;
+
+		&:hover {
+			box-shadow: $largeShadow;
+		}
+
+		transition: all 0.2s;
+	}
+
+	.selected {
+		color: white;
+		background-color: $blue;
+	}
+
 	.choice {
 		box-shadow: $shadow;
 		border-radius: 4px;
@@ -156,6 +171,11 @@ body {
 
 		&.correct {
 			background-color: $green;
+			color: black;
+		}
+
+		&.incorrect {
+			background-color: $red;
 		}
 
 		transition: background-color 0.2s;

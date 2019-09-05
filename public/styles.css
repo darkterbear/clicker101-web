@@ -124,6 +124,20 @@ html h5.error,
 body h5.error {
   color: #f95757;
 }
+html .clickable,
+body .clickable {
+  cursor: pointer;
+  transition: all 0.2s;
+}
+html .clickable:hover,
+body .clickable:hover {
+  box-shadow: 0 6px 12px 0 rgba(0, 0, 0, 0.18), 0 3px 6px 0 rgba(0, 0, 0, 0.12);
+}
+html .selected,
+body .selected {
+  color: white;
+  background-color: #527aff;
+}
 html .choice,
 body .choice {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.12), 0 2px 4px 0 rgba(0, 0, 0, 0.08);
@@ -135,6 +149,11 @@ body .choice {
 html .choice.correct,
 body .choice.correct {
   background-color: #20df8f;
+  color: black;
+}
+html .choice.incorrect,
+body .choice.incorrect {
+  background-color: #f95757;
 }
 html .content,
 body .content {

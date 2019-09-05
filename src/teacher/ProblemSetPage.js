@@ -14,11 +14,10 @@ import {
 } from '../api/teacher'
 import Modal from 'react-modal'
 import { Bar } from 'react-chartjs-2'
-const { isOnlyWhitespace, modalStyle } = require('../helper')
+const { isOnlyWhitespace, modalStyle, letters } = require('../helper')
 
 Modal.setAppElement('#root')
 
-const letters = ['A', 'B', 'C', 'D', 'E', 'F']
 export default class ProblemSetPage extends Component {
 	constructor(props) {
 		super(props)

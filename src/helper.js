@@ -8,6 +8,8 @@ const isOnlyWhitespace = s => {
 	return s.replace(/\s/g, '').length === 0
 }
 
+const letters = ['A', 'B', 'C', 'D', 'E', 'F']
+
 const modalStyle = {
 	content: {
 		top: '50%',
@@ -49,5 +51,6 @@ module.exports = {
 	isValidEmail,
 	isOnlyWhitespace,
 	modalStyle,
-	formatDate
+	formatDate,
+	letters
 }

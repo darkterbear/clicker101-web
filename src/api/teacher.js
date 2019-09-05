@@ -1,13 +1,7 @@
 const { BASE_URL, POST, GET } = require('./index')
 
 exports.teacherFetchClasses = () => {
-	return fetch(BASE_URL + '/api/teachers/fetch-classes', {
-		method: 'GET',
-		headers: {
-			Accept: 'application/json'
-		},
-		credentials: 'include'
-	})
+	return GET('/api/teachers/fetch-classes')
 }
 
 exports.createClass = name => {
