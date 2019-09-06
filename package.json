@@ -1,6 +1,6 @@
 {
 	"name": "clicker101-web",
-	"version": "0.0.1",
+	"version": "1.0.0",
 	"description": "",
 	"scripts": {
 		"start": "react-scripts start",
