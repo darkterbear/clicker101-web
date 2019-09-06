@@ -7,6 +7,7 @@ import {
 	studentFetchClass,
 	leaveClass
 } from '../api/student'
+import Sockets from '../api/sockets'
 import Modal from 'react-modal'
 const { isOnlyWhitespace, modalStyle, letters } = require('../helper')
 
@@ -31,6 +32,10 @@ export default class StudentClassPage extends Component {
 	async componentDidMount() {
 		this.fetchClass()
 		this.getProblem()
+		Sockets.subscribeToProgress(classId => {
+			if (classId.toString() === this.state.class._id.toString())
+				this.getProblem()
+		})
 	}
 
 	fetchClass = async () => {
@@ -56,7 +61,14 @@ export default class StudentClassPage extends Component {
 				selectedAnswer: problem.response ? problem.response.response : null,
 				correctAnswer: problem.correct !== null ? problem.correct : null
 			})
-		} else if (problemResponse.status !== 404) this.props.history.push('/login')
+		} else if (problemResponse.status === 404) {
+			// TODO: clear problem state to original
+			this.setState({
+				currentProblem: null,
+				selectedAnswer: null,
+				correctAnswer: null
+			})
+		} else this.props.history.push('/login')
 	}
 
 	openSettingsModal = () => {
@@ -140,9 +152,25 @@ export default class StudentClassPage extends Component {
 									</div>
 								))}
 							</div>
-							<div className="row v-center-content">
-								Select an answer to the question!
-							</div>
+							{this.state.selectedAnswer === null &&
+								this.state.correctAnswer === null && (
+									<div className="row v-center-content">
+										Select an answer to the question!
+									</div>
+								)}
+
+							{this.state.selectedAnswer !== null &&
+								this.state.correctAnswer === null && (
+									<div className="row v-center-content">
+										You can change your answer if you'd like
+									</div>
+								)}
+
+							{this.state.correctAnswer !== null && (
+								<div className="row v-center-content">
+									Hang tight for the next question!
+								</div>
+							)}
 						</div>
 					) : (
 						<div
