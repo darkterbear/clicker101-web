@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Button, Textbox } from '../Components'
+import { Button, SmallButton } from '../Components'
 import queryString from 'query-string'
 import {
 	getProblem,
@@ -9,7 +9,8 @@ import {
 } from '../api/student'
 import Sockets from '../api/sockets'
 import Modal from 'react-modal'
-const { isOnlyWhitespace, modalStyle, letters } = require('../helper')
+import { logout } from '../api'
+const { modalStyle, letters } = require('../helper')
 
 Modal.setAppElement('#root')
 
@@ -62,7 +63,6 @@ export default class StudentClassPage extends Component {
 				correctAnswer: problem.correct !== null ? problem.correct : null
 			})
 		} else if (problemResponse.status === 404) {
-			// TODO: clear problem state to original
 			this.setState({
 				currentProblem: null,
 				selectedAnswer: null,
@@ -97,6 +97,11 @@ export default class StudentClassPage extends Component {
 		}
 	}
 
+	logout = async () => {
+		await logout()
+		this.props.history.push('/login')
+	}
+
 	render() {
 		console.log(this.state)
 		return (
@@ -119,11 +124,12 @@ export default class StudentClassPage extends Component {
 				<div className="container-fluid" style={{ padding: 0, height: '100%' }}>
 					<div className="row" style={{ margin: 0 }}>
 						<h2 className="before-button">{this.state.class.name}</h2>
-						<Button
+						<SmallButton
 							text="Settings"
 							onClick={this.openSettingsModal}
 							className="right"
 						/>
+						<SmallButton text="Log Out" onClick={this.logout} />
 					</div>
 					{this.state.currentProblem ? (
 						<div style={{ height: 'calc(100% - 3.1875rem)' }}>

@@ -1,4 +1,4 @@
-const { BASE_URL, POST, GET } = require('./index')
+const { POST, GET } = require('./index')
 
 exports.teacherFetchClasses = () => {
 	return GET('/api/teachers/fetch-classes')

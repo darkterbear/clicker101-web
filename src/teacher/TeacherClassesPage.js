@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
-import { Button, Textbox } from '../Components'
+import { Button, Textbox, SmallButton } from '../Components'
 import { teacherFetchClasses, createClass } from '../api/teacher'
 import Modal from 'react-modal'
+import { logout } from '../api'
 const { isOnlyWhitespace, modalStyle } = require('../helper')
 
 Modal.setAppElement('#root')
@@ -61,6 +62,11 @@ export default class TeacherClassesPage extends Component {
 		this.fetchClasses()
 	}
 
+	logout = async () => {
+		await logout()
+		this.props.history.push('/login')
+	}
+
 	render() {
 		let classes = this.state.classes.map((c, i) => (
 			<tr
@@ -100,6 +106,12 @@ export default class TeacherClassesPage extends Component {
 					<div className="row" style={{ margin: 0 }}>
 						<h2 className="before-button">Your Classes</h2>
 						<Button text="New Class" onClick={this.openNewClassModal} />
+						<SmallButton
+							style={{ marginTop: '0.5rem' }}
+							className="right"
+							text="Log Out"
+							onClick={this.logout}
+						/>
 					</div>
 					<table className="table">
 						<thead>

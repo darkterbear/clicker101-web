@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Button, Textbox } from '../Components'
+import { Button, Textbox, SmallButton } from '../Components'
 import queryString from 'query-string'
 import {
 	teacherFetchClass,
@@ -8,6 +8,7 @@ import {
 	deleteClass
 } from '../api/teacher'
 import Modal from 'react-modal'
+import { logout } from '../api'
 const { isOnlyWhitespace, modalStyle, formatDate } = require('../helper')
 
 Modal.setAppElement('#root')
@@ -115,6 +116,11 @@ export default class TeacherClassPage extends Component {
 		this.props.history.push('/teacher/classes')
 	}
 
+	logout = async () => {
+		await logout()
+		this.props.history.push('/login')
+	}
+
 	render() {
 		let problemSets =
 			this.state.class.problemSets &&
@@ -191,11 +197,12 @@ export default class TeacherClassPage extends Component {
 					<div className="row" style={{ margin: 0 }}>
 						<h2 className="before-button">{this.state.class.name}</h2>
 						<Button text="New Problem Set" onClick={this.openNewPSModal} />
-						<Button
+						<SmallButton
 							text="Settings"
 							onClick={this.openSettingsModal}
 							className="right"
 						/>
+						<SmallButton text="Log Out" onClick={this.logout} />
 					</div>
 					<table className="table">
 						<thead>

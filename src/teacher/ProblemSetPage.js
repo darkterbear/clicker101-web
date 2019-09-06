@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Button, Textbox } from '../Components'
+import { Button, Textbox, SmallButton } from '../Components'
 import queryString from 'query-string'
 import {
 	teacherFetchProblemSet,
@@ -14,6 +14,7 @@ import {
 } from '../api/teacher'
 import Modal from 'react-modal'
 import { Bar } from 'react-chartjs-2'
+import { logout } from '../api'
 const { isOnlyWhitespace, modalStyle, letters } = require('../helper')
 
 Modal.setAppElement('#root')
@@ -318,6 +319,11 @@ export default class ProblemSetPage extends Component {
 		}
 	}
 
+	logout = async () => {
+		await logout()
+		this.props.history.push('/login')
+	}
+
 	render() {
 		let currentProblem, problemData, selectedProblem, resultData
 
@@ -564,11 +570,12 @@ export default class ProblemSetPage extends Component {
 									onClick={this.proceedProblem}
 								/>
 							)}
-						<Button
+						<SmallButton
 							text="Settings"
 							onClick={this.openSettingsModal}
 							className="right"
 						/>
+						<SmallButton text="Log Out" onClick={this.logout} />
 					</div>
 					<div className="row" style={{ height: 'calc(100% - 3.1875rem)' }}>
 						<div className="col-4">
