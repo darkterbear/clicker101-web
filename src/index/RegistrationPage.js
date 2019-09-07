@@ -12,7 +12,10 @@ export default class RegistrationPage extends Component {
 			email: '',
 			name: '',
 			password: '',
-			confirm: ''
+			confirm: '',
+
+			isLoading: false,
+			errorMessage: ''
 		}
 	}
 
@@ -21,6 +24,8 @@ export default class RegistrationPage extends Component {
 	}
 
 	register = async () => {
+		if (this.state.isLoading) return
+
 		let { email, name, password, confirm } = this.state
 
 		if (
@@ -29,6 +34,7 @@ export default class RegistrationPage extends Component {
 			isValidEmail(email) &&
 			password.length >= 8
 		) {
+			this.setState({ errorMessage: false, isLoading: true })
 			let registerResponse = await register(
 				email,
 				name,
@@ -40,8 +46,13 @@ export default class RegistrationPage extends Component {
 				if (this.state.type === 'teacher')
 					this.props.history.push('/teacher/classes')
 				else this.props.history.push('/student/classes')
-			}
-		}
+			} else
+				this.setState({
+					isLoading: false,
+					errorMessage: 'Something happened :('
+				})
+		} else
+			this.setState({ errorMessage: 'Something is wrong with your input!' })
 	}
 
 	render() {
@@ -99,6 +110,11 @@ export default class RegistrationPage extends Component {
 					<div className="row justify-content-center">
 						<Button text="Get Started" onClick={this.register} />
 					</div>
+					{this.state.errorMessage && (
+						<div className="row justify-content-center">
+							<h5 className="error">{this.state.errorMessage}</h5>
+						</div>
+					)}
 				</div>
 			</div>
 		)

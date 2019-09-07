@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Button, SmallButton } from '../Components'
+import { Button, SmallButton, Spinner } from '../Components'
 import queryString from 'query-string'
 import {
 	getProblem,
@@ -183,6 +183,7 @@ export default class StudentClassPage extends Component {
 							className="v-center-content"
 							style={{ height: 'calc(100% - 3.1875rem)' }}>
 							<h3>Nothing going on in this class right now :)</h3>
+							<Spinner show={true} />
 						</div>
 					)}
 				</div>

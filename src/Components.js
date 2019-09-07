@@ -66,12 +66,28 @@ export class Textbox extends Component {
 				type={this.props.type}
 				className={this.props.className}
 				placeholder={this.props.placeholder}
+				maxlength={this.props.maxlength}
 				value={this.props.text}
 				onChange={e => {
 					this.setState({ text: e.target.value })
 					if (this.props.onTextChange) this.props.onTextChange(e.target.value)
 				}}
 			/>
+		)
+	}
+}
+
+export class Spinner extends Component {
+	render() {
+		return (
+			this.props.show && (
+				<div class="sk-folding-cube">
+					<div class="sk-cube1 sk-cube"></div>
+					<div class="sk-cube2 sk-cube"></div>
+					<div class="sk-cube4 sk-cube"></div>
+					<div class="sk-cube3 sk-cube"></div>
+				</div>
+			)
 		)
 	}
 }

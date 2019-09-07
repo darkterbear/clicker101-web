@@ -15,7 +15,8 @@ export default class StudentClassesPage extends Component {
 			classes: [],
 			joinClassModalOpen: false,
 			joinClassModalCode: '',
-			joinClassModalIsLoading: false
+			joinClassModalIsLoading: false,
+			joinClassModalErrorMessage: ''
 		}
 	}
 
@@ -43,23 +44,43 @@ export default class StudentClassesPage extends Component {
 	}
 
 	closeJoinClassModal = () => {
-		this.setState({ joinClassModalOpen: false, joinClassModalCode: '' })
+		this.setState({
+			joinClassModalOpen: false,
+			joinClassModalCode: '',
+			joinClassModalErrorMessage: ''
+		})
 	}
 
 	onJoinClassModalCodeChange = joinClassModalCode => {
-		if (joinClassModalCode.length <= 8) this.setState({ joinClassModalCode })
+		this.setState({ joinClassModalCode })
 	}
 
 	joinClass = async () => {
 		let code = this.state.joinClassModalCode
-		if (isOnlyWhitespace(code) || this.state.joinClassModalIsLoading) return
-		this.setState({ joinClassModalIsLoading: true })
+		if (this.state.joinClassModalIsLoading) return
+		if (code.length !== 6) {
+			this.setState({
+				joinClassModalErrorMessage: 'Please enter a valid class code'
+			})
+			return
+		}
 
-		await joinClass(code)
+		this.setState({
+			joinClassModalIsLoading: true,
+			joinClassModalErrorMessage: ''
+		})
 
-		this.closeJoinClassModal()
-		this.setState({ joinClassModalIsLoading: false })
-		this.fetchClasses()
+		let joinClassResponse = await joinClass(code)
+
+		if (joinClassResponse.status === 200) {
+			this.closeJoinClassModal()
+			this.setState({ joinClassModalIsLoading: false })
+			this.fetchClasses()
+		} else
+			this.setState({
+				joinClassModalIsLoading: false,
+				joinClassModalErrorMessage: 'Incorrect class code'
+			})
 	}
 
 	logout = async () => {
@@ -68,6 +89,7 @@ export default class StudentClassesPage extends Component {
 	}
 
 	render() {
+		console.log(this.state.joinClassModalCode.length)
 		let classes = this.state.classes.map((c, i) => (
 			<tr
 				className="class-item"
@@ -88,15 +110,19 @@ export default class StudentClassesPage extends Component {
 					<Textbox
 						className="full-width"
 						placeholder="Class Code"
+						maxlength={6}
 						onTextChange={this.onJoinClassModalCodeChange}
 						onEnter={this.joinClass}
 					/>
 					<Button
 						text="Join"
 						onClick={this.joinClass}
-						disabled={isOnlyWhitespace(this.state.joinClassModalCode)}
+						disabled={this.state.joinClassModalCode.length !== 6}
 					/>
 					<Button text="Cancel" onClick={this.closeJoinClassModal} />
+					{this.state.joinClassModalErrorMessage && (
+						<h5 className="error">{this.state.joinClassModalErrorMessage}</h5>
+					)}
 					{this.state.joinClassModalIsLoading && <h5>Loading...</h5>}
 				</Modal>
 				<div className="container-fluid" style={{ padding: 0 }}>

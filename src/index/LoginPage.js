@@ -7,22 +7,33 @@ export default class LoginPage extends Component {
 		super(props)
 
 		this.state = {
-			loginFailed: false,
+			errorMessage: '',
+			isLoading: false,
 			email: '',
 			password: ''
 		}
 	}
 
 	login = async () => {
-		this.setState({ loginFailed: false })
+		if (this.state.isLoading) return
+		if (!this.state.password || !this.state.email) {
+			this.setState({ errorMessage: 'Please input your credentials' })
+			return
+		}
+
+		this.setState({ errorMessage: '', isLoading: true })
 		let { email, password } = this.state
+
 		let loginResponse = await authenticate(email, password)
 
 		let status = loginResponse.status
 		if (status === 200) this.props.history.push('/teacher/classes')
 		else if (status === 201) this.props.history.push('/student/classes')
 		else {
-			this.setState({ loginFailed: true })
+			this.setState({
+				errorMessage: 'Email or password is incorrect :(',
+				isLoading: false
+			})
 		}
 	}
 
@@ -51,9 +62,9 @@ export default class LoginPage extends Component {
 							onTextChange={t => this.setState({ password: t })}
 						/>
 					</div>
-					{this.state.loginFailed && (
+					{this.state.errorMessage && (
 						<div className="row justify-content-center">
-							<h5 className="error">Incorrect email or password :(</h5>
+							<h5 className="error">{this.state.errorMessage}</h5>
 						</div>
 					)}
 					<div className="row justify-content-center">
