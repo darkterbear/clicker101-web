@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Button, SmallButton, Spinner } from '../Components'
+import { Button, SmallButton, Spinner, LoadingBar } from '../Components'
 import queryString from 'query-string'
 import {
 	getProblem,
@@ -106,6 +106,7 @@ export default class StudentClassPage extends Component {
 		console.log(this.state)
 		return (
 			<div className="content">
+				<LoadingBar show={this.settingsModalIsLoading} />
 				{/* Settings modal */}
 				<Modal
 					isOpen={this.state.settingsModalOpen}

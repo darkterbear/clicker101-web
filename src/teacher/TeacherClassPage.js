@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Button, Textbox, SmallButton } from '../Components'
+import { Button, Textbox, SmallButton, LoadingBar } from '../Components'
 import queryString from 'query-string'
 import {
 	teacherFetchClass,
@@ -145,6 +145,11 @@ export default class TeacherClassPage extends Component {
 
 		return (
 			<div className="content">
+				<LoadingBar
+					show={
+						this.state.newPSModalIsLoading || this.state.settingsModalIsLoading
+					}
+				/>
 				{/* New problem set modal */}
 				<Modal
 					isOpen={this.state.newPSModalOpen}
@@ -164,7 +169,6 @@ export default class TeacherClassPage extends Component {
 						disabled={isOnlyWhitespace(this.state.newPSModalName)}
 					/>
 					<Button text="Cancel" onClick={this.closeNewPSModal} />
-					{this.state.newPSModalIsLoading && <h5>Loading...</h5>}
 				</Modal>
 				{/* Settings modal */}
 				<Modal
@@ -191,7 +195,6 @@ export default class TeacherClassPage extends Component {
 						onClick={this.deleteClass}
 					/>
 					<Button text="Cancel" onClick={this.closeSettingsModal} />
-					{this.state.settingsModalIsLoading && <h5>Loading...</h5>}
 				</Modal>
 				<div className="container-fluid">
 					<div className="row">

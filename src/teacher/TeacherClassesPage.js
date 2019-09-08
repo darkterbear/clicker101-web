@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Button, Textbox, SmallButton } from '../Components'
+import { Button, Textbox, SmallButton, LoadingBar } from '../Components'
 import { teacherFetchClasses, createClass } from '../api/teacher'
 import Modal from 'react-modal'
 import { logout } from '../api'
@@ -82,6 +82,7 @@ export default class TeacherClassesPage extends Component {
 
 		return (
 			<div className="content">
+				<LoadingBar show={this.state.newClassModalIsLoading} />
 				<Modal
 					isOpen={this.state.newClassModalOpen}
 					onRequestClose={this.closeNewClassModal}
@@ -100,7 +101,6 @@ export default class TeacherClassesPage extends Component {
 						disabled={isOnlyWhitespace(this.state.newClassModalName)}
 					/>
 					<Button text="Cancel" onClick={this.closeNewClassModal} />
-					{this.state.newClassModalIsLoading && <h5>Loading...</h5>}
 				</Modal>
 				<div className="container-fluid">
 					<div className="row">

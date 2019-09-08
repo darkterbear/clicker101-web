@@ -1,13 +1,21 @@
 import React, { Component } from 'react'
-import { Button, SmallButton } from '../Components'
+import { Button, SmallButton, LoadingBar } from '../Components'
 import { authenticate } from '../api/index'
 
 export default class SplashPage extends Component {
+	constructor(props) {
+		super(props)
+
+		this.state = {
+			isLoading: false
+		}
+	}
 	getStarted = () => {
 		this.props.history.push('/register')
 	}
 
 	login = async () => {
+		this.setState({ isLoading: true })
 		let authResponse = await authenticate()
 		if (authResponse.status === 200) this.props.history.push('/teacher/classes')
 		else if (authResponse.status === 201)
@@ -18,6 +26,7 @@ export default class SplashPage extends Component {
 	render() {
 		return (
 			<div className="content v-center-content">
+				<LoadingBar show={this.state.isLoading} />
 				<h2 className="top-left-absolute">Clicker101</h2>
 				<div className="container">
 					<div className="row justify-content-center">

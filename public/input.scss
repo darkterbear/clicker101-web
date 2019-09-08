@@ -258,6 +258,46 @@ body {
 		margin: 0;
 	}
 
+	.loading-bar {
+		position: absolute;
+		height: 0.5rem;
+		left: 0;
+		right: 0;
+		top: 0;
+		opacity: 1;
+
+		animation: rainbow 2s linear;
+		animation-iteration-count: infinite;
+
+		&.hide {
+			opacity: 0;
+		}
+
+		transition: all 0.2s;
+	}
+
+	@keyframes rainbow {
+		0% {
+			background-color: $blue;
+		}
+
+		25% {
+			background-color: $red;
+		}
+
+		50% {
+			background-color: $green;
+		}
+
+		75% {
+			background-color: #33aa33;
+		}
+
+		100% {
+			background-color: $blue;
+		}
+	}
+
 	.full-width {
 		width: calc(100% - 0.5rem);
 	}

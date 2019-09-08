@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Button, Textbox, SmallButton } from '../Components'
+import { Button, Textbox, SmallButton, LoadingBar } from '../Components'
 import queryString from 'query-string'
 import {
 	teacherFetchProblemSet,
@@ -453,6 +453,13 @@ export default class ProblemSetPage extends Component {
 
 		return (
 			<div className="content">
+				<LoadingBar
+					show={
+						this.state.editingIsLoading ||
+						this.state.newProblemModalIsLoading ||
+						this.state.settingsModalIsLoading
+					}
+				/>
 				{/* New problem modal */}
 				<Modal
 					isOpen={this.state.newProblemModalOpen}
@@ -509,7 +516,6 @@ export default class ProblemSetPage extends Component {
 						disabled={this.state.newProblemModalChoices.length >= 6}
 					/>
 					<Button text="Cancel" onClick={this.closeNewProblemModal} />
-					{this.state.newProblemModalIsLoading && <h5>Loading...</h5>}
 				</Modal>
 
 				{/* Settings modal */}
@@ -537,7 +543,6 @@ export default class ProblemSetPage extends Component {
 						onClick={this.deleteProblemSet}
 					/>
 					<Button text="Cancel" onClick={this.closeSettingsModal} />
-					{this.state.settingsModalIsLoading && <h5>Loading...</h5>}
 				</Modal>
 				<div className="container-fluid h-100">
 					<div className="row">
@@ -666,7 +671,6 @@ export default class ProblemSetPage extends Component {
 													</div>
 												)
 											)}
-											{this.state.editingIsLoading && <h5>Loading...</h5>}
 										</div>
 									)}
 									{this.state.selectedProblem < 0 && (

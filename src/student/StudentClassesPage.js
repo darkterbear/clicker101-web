@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Button, Textbox, SmallButton } from '../Components'
+import { Button, Textbox, SmallButton, LoadingBar } from '../Components'
 import { studentFetchClasses, joinClass } from '../api/student'
 import Modal from 'react-modal'
 import { logout } from '../api'
@@ -89,7 +89,6 @@ export default class StudentClassesPage extends Component {
 	}
 
 	render() {
-		console.log(this.state.joinClassModalCode.length)
 		let classes = this.state.classes.map((c, i) => (
 			<tr
 				className="class-item"
@@ -101,6 +100,7 @@ export default class StudentClassesPage extends Component {
 
 		return (
 			<div className="content">
+				<LoadingBar show={this.state.joinClassModalIsLoading} />
 				<Modal
 					isOpen={this.state.joinClassModalOpen}
 					onRequestClose={this.closeJoinClassModal}
@@ -123,7 +123,6 @@ export default class StudentClassesPage extends Component {
 					{this.state.joinClassModalErrorMessage && (
 						<h5 className="error">{this.state.joinClassModalErrorMessage}</h5>
 					)}
-					{this.state.joinClassModalIsLoading && <h5>Loading...</h5>}
 				</Modal>
 				<div className="container-fluid">
 					<div className="row">

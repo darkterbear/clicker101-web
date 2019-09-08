@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Button, Textbox } from '../Components'
+import { Button, Textbox, LoadingBar } from '../Components'
 import { isValidEmail, isOnlyWhitespace } from '../helper'
 import { register } from '../api/index'
 
@@ -58,6 +58,7 @@ export default class RegistrationPage extends Component {
 	render() {
 		return (
 			<div className="content v-center-content">
+				<LoadingBar show={this.state.isLoading} />
 				<h2 className="top-left-absolute">Clicker101</h2>
 				<div className="container">
 					<div className="row justify-content-center">

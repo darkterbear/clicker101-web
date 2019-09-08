@@ -91,3 +91,9 @@ export class Spinner extends Component {
 		)
 	}
 }
+
+export class LoadingBar extends Component {
+	render() {
+		return <div class={`loading-bar ${this.props.show ? '' : 'hide'}`}></div>
+	}
+}
