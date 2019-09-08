@@ -102,12 +102,11 @@ export default class TeacherClassesPage extends Component {
 					<Button text="Cancel" onClick={this.closeNewClassModal} />
 					{this.state.newClassModalIsLoading && <h5>Loading...</h5>}
 				</Modal>
-				<div className="container-fluid" style={{ padding: 0 }}>
-					<div className="row" style={{ margin: 0 }}>
+				<div className="container-fluid">
+					<div className="row">
 						<h2 className="before-button">Your Classes</h2>
 						<Button text="New Class" onClick={this.openNewClassModal} />
 						<SmallButton
-							style={{ marginTop: '0.5rem' }}
 							className="right"
 							text="Log Out"
 							onClick={this.logout}

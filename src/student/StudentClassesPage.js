@@ -125,12 +125,11 @@ export default class StudentClassesPage extends Component {
 					)}
 					{this.state.joinClassModalIsLoading && <h5>Loading...</h5>}
 				</Modal>
-				<div className="container-fluid" style={{ padding: 0 }}>
-					<div className="row" style={{ margin: 0 }}>
+				<div className="container-fluid">
+					<div className="row">
 						<h2 className="before-button">Your Classes</h2>
 						<Button text="Join Class" onClick={this.openJoinClassModal} />
 						<SmallButton
-							style={{ marginTop: '0.5rem' }}
 							className="right"
 							text="Log Out"
 							onClick={this.logout}

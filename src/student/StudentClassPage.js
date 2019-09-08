@@ -113,16 +113,12 @@ export default class StudentClassPage extends Component {
 					style={modalStyle}
 					contentLabel="Class Settings">
 					<h3>Class Settings</h3>
-					<Button
-						text="Leave Class"
-						style={{ backgroundColor: '#f95757' }}
-						onClick={this.leaveClass}
-					/>
+					<Button text="Leave Class" warning={true} onClick={this.leaveClass} />
 					<Button text="Cancel" onClick={this.closeSettingsModal} />
 					{this.state.settingsModalIsLoading && <h5>Loading...</h5>}
 				</Modal>
-				<div className="container-fluid" style={{ padding: 0, height: '100%' }}>
-					<div className="row" style={{ margin: 0 }}>
+				<div className="container-fluid h-100">
+					<div className="row">
 						<h2 className="before-button">{this.state.class.name}</h2>
 						<SmallButton
 							text="Settings"
@@ -132,8 +128,8 @@ export default class StudentClassPage extends Component {
 						<SmallButton text="Log Out" onClick={this.logout} />
 					</div>
 					{this.state.currentProblem ? (
-						<div style={{ height: 'calc(100% - 3.1875rem)' }}>
-							<div className="row" style={{ margin: 0, marginTop: '1rem' }}>
+						<div>
+							<div className="row">
 								<h1>{this.state.currentProblem.question}</h1>
 							</div>
 							<div className="row">

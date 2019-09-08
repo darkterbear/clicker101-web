@@ -468,13 +468,12 @@ export default class ProblemSetPage extends Component {
 					{this.state.newProblemModalChoices.map((choice, i) => (
 						<div key={i}>
 							<Textbox
-								className="full-width "
+								className="full-width choice-edit"
 								placeholder={`Choice ${i + 1}`}
 								onTextChange={choice =>
 									this.onNewProblemModalChoiceChange(i, choice)
 								}
 								text={choice}
-								style={{ display: 'inline', width: 'calc(100% - 4rem)' }}
 							/>
 							<i
 								className={`material-icons${
@@ -534,14 +533,14 @@ export default class ProblemSetPage extends Component {
 					/>
 					<Button
 						text="Delete Problem Set"
-						style={{ backgroundColor: '#f95757' }}
+						warning={true}
 						onClick={this.deleteProblemSet}
 					/>
 					<Button text="Cancel" onClick={this.closeSettingsModal} />
 					{this.state.settingsModalIsLoading && <h5>Loading...</h5>}
 				</Modal>
-				<div className="container-fluid h-100" style={{ padding: 0 }}>
-					<div className="row" style={{ margin: 0 }}>
+				<div className="container-fluid h-100">
+					<div className="row">
 						<h2 className="before-button">{this.state.problemSet.name}</h2>
 
 						{/* Display Add Problem button if set hasn't been executed */}
@@ -591,17 +590,11 @@ export default class ProblemSetPage extends Component {
 						<div className="col-8">
 							{/* Display editing panel when not yet started */}
 							{!this.state.problemSet.executionDate && (
-								<div className="v-center-content h-100">
+								<div className="v-center-content h-100 full-width">
 									{selectedProblem && (
-										<div
-											className="h-100"
-											style={{ paddingTop: '1rem', width: '100%' }}>
-											<div className="row" style={{ margin: '0' }}>
-												<h3
-													style={{
-														marginTop: '0.5rem',
-														marginRight: '1rem'
-													}}>
+										<div className="h-100 full-width">
+											<div className="row">
+												<h3 className="before-button">
 													Editing Problem {this.state.selectedProblem + 1}
 												</h3>
 												<Button
@@ -626,12 +619,11 @@ export default class ProblemSetPage extends Component {
 												/>
 												<Button
 													text="Delete"
-													style={{ backgroundColor: '#f95757' }}
+													warning={true}
 													onClick={this.deleteProblem}
 												/>
 											</div>
 											<Textbox
-												style={{ marginTop: '1rem' }}
 												className="full-width"
 												text={this.state.selectedProblemEditQuestion}
 												onTextChange={question => {
@@ -643,16 +635,12 @@ export default class ProblemSetPage extends Component {
 												(choice, i) => (
 													<div key={i}>
 														<Textbox
-															className="full-width"
+															className="full-width choice-edit"
 															placeholder={`Choice ${i + 1}`}
 															onTextChange={choice => {
 																this.onEditChoiceChange(i, choice)
 															}}
 															text={choice}
-															style={{
-																display: 'inline',
-																width: 'calc(100% - 4rem)'
-															}}
 														/>
 														<i
 															className={`material-icons${

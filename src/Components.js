@@ -14,7 +14,7 @@ export class Button extends Component {
 			<button
 				className={`${this.props.className} normal ${
 					this.props.disabled ? 'disabled' : ''
-				}`}
+				} ${this.props.warning ? 'red' : ''}`}
 				onClick={this.onClick}
 				style={this.props.style}>
 				{this.props.text}

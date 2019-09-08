@@ -65,6 +65,10 @@ html button.right,
 body button.right {
   margin-left: auto;
 }
+html button.red,
+body button.red {
+  background-color: #f95757;
+}
 html input,
 body input {
   display: block;
@@ -80,10 +84,6 @@ body input {
 html input.center,
 body input.center {
   text-align: center;
-}
-html input.full-width,
-body input.full-width {
-  width: calc(100% - 0.5rem);
 }
 html input:focus,
 body input:focus {
@@ -116,6 +116,11 @@ body h3 {
   font-size: 1.5rem;
   margin: 0;
   margin-bottom: 0.5rem;
+}
+html h3.before-button,
+body h3.before-button {
+  margin-right: 1rem;
+  margin-top: 0.5rem;
 }
 html h5,
 body h5 {
@@ -225,6 +230,14 @@ body .sk-folding-cube .sk-cube4:before {
     opacity: 0;
   }
 }
+html .row,
+body .row {
+  margin: 0;
+}
+html .full-width,
+body .full-width {
+  width: calc(100% - 0.5rem);
+}
 html .clickable,
 body .clickable {
   cursor: pointer;
@@ -238,6 +251,11 @@ html .selected,
 body .selected {
   color: white;
   background-color: #527aff;
+}
+html .choice-edit,
+body .choice-edit {
+  display: inline;
+  width: calc(100% - 4rem);
 }
 html .choice,
 body .choice {

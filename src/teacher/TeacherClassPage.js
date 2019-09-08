@@ -187,14 +187,14 @@ export default class TeacherClassPage extends Component {
 					/>
 					<Button
 						text="Delete Class"
-						style={{ backgroundColor: '#f95757' }}
+						warning={true}
 						onClick={this.deleteClass}
 					/>
 					<Button text="Cancel" onClick={this.closeSettingsModal} />
 					{this.state.settingsModalIsLoading && <h5>Loading...</h5>}
 				</Modal>
-				<div className="container-fluid" style={{ padding: 0 }}>
-					<div className="row" style={{ margin: 0 }}>
+				<div className="container-fluid">
+					<div className="row">
 						<h2 className="before-button">{this.state.class.name}</h2>
 						<Button text="New Problem Set" onClick={this.openNewPSModal} />
 						<SmallButton
