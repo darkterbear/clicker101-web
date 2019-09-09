@@ -8,6 +8,7 @@ import {
 	deleteClass
 } from '../api/teacher'
 import Modal from 'react-modal'
+import QRCode from 'qrcode.react'
 import { logout } from '../api'
 const { isOnlyWhitespace, modalStyle, formatDate } = require('../helper')
 
@@ -28,7 +29,9 @@ export default class TeacherClassPage extends Component {
 
 			settingsModalOpen: false,
 			settingsModalName: '',
-			settingsModalIsLoading: false
+			settingsModalIsLoading: false,
+
+			qrModalOpen: false
 		}
 	}
 
@@ -65,12 +68,20 @@ export default class TeacherClassPage extends Component {
 		})
 	}
 
+	openQRModal = () => {
+		this.setState({ qrModalOpen: true })
+	}
+
 	closeNewPSModal = () => {
 		this.setState({ newPSModalOpen: false, newPSModalName: '' })
 	}
 
 	closeSettingsModal = () => {
 		this.setState({ settingsModalOpen: false, settingsModalName: '' })
+	}
+
+	closeQRModal = () => {
+		this.setState({ qrModalOpen: false })
 	}
 
 	onNewPSModalNameChange = newPSModalName => {
@@ -196,15 +207,27 @@ export default class TeacherClassPage extends Component {
 					/>
 					<Button text="Cancel" onClick={this.closeSettingsModal} />
 				</Modal>
+				{/* QR modal */}
+				<Modal
+					isOpen={this.state.qrModalOpen}
+					onRequestClose={this.closeQRModal}
+					style={modalStyle}
+					contentLabel="Class QR Code">
+					<h3>Class QR Code</h3>
+					<div className="row v-center-content">
+						<QRCode value={this.state.class.code} size={256} />
+					</div>
+				</Modal>
 				<div className="container-fluid">
 					<div className="row">
 						<h2 className="before-button">{this.state.class.name}</h2>
 						<Button text="New Problem Set" onClick={this.openNewPSModal} />
 						<SmallButton
-							text="Settings"
-							onClick={this.openSettingsModal}
+							text="QR Code"
+							onClick={this.openQRModal}
 							className="right"
 						/>
+						<SmallButton text="Settings" onClick={this.openSettingsModal} />
 						<SmallButton text="Log Out" onClick={this.logout} />
 					</div>
 					<table className="table">

@@ -15,6 +15,7 @@
 	"author": "Terrance Li",
 	"dependencies": {
 		"chart.js": "^2.8.0",
+		"qrcode.react": "^0.9.3",
 		"query-string": "^6.8.3",
 		"react": "^16.8.6",
 		"react-chartjs-2": "^2.7.6",
