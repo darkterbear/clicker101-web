@@ -141,7 +141,9 @@ export default class StudentClassPage extends Component {
 											this.state.correctAnswer === null ? 'clickable' : ''
 										} ${this.state.selectedAnswer === i ? 'selected' : ''} ${
 											this.state.correctAnswer !== null
-												? this.state.correctAnswer === i
+												? this.state.correctAnswer === i ||
+												  (this.state.correctAnswer < 0 &&
+														this.state.selectedAnswer === i)
 													? 'correct'
 													: this.state.selectedAnswer === i
 													? 'incorrect'

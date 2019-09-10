@@ -98,12 +98,8 @@ export default class ProblemSetPage extends Component {
 		}
 	}
 
-	isValidInput = (question, choices, correct, isLoading) => {
-		if (
-			[question, ...choices].some(s => isOnlyWhitespace(s)) ||
-			isLoading ||
-			correct < 0
-		)
+	isValidInput = (question, choices, isLoading) => {
+		if ([question, ...choices].some(s => isOnlyWhitespace(s)) || isLoading)
 			return false
 		return true
 	}
@@ -139,11 +135,13 @@ export default class ProblemSetPage extends Component {
 	}
 
 	newProblemDeleteChoice = i => {
-		let hasSelectedCorrect = this.state.newProblemModalCorrect >= 0
 		let choices = this.state.newProblemModalChoices.slice()
-		let correct = this.state.newProblemModalCorrect - 1
 		choices.splice(i, 1)
-		if (correct < 0 && hasSelectedCorrect) correct = 0
+
+		let correct = this.state.newProblemModalCorrect
+		if (i < correct) correct--
+		else if (i === correct) correct = -1
+
 		this.setState({
 			newProblemModalChoices: choices,
 			newProblemModalCorrect: correct
@@ -151,7 +149,9 @@ export default class ProblemSetPage extends Component {
 	}
 
 	newProblemChooseCorrect = i => {
-		this.setState({ newProblemModalCorrect: i })
+		if (i === this.newProblemModalCorrect)
+			this.setState({ newProblemModalCorrect: -1 })
+		else this.setState({ newProblemModalCorrect: i })
 	}
 
 	addProblem = async () => {
@@ -159,12 +159,7 @@ export default class ProblemSetPage extends Component {
 		let choices = this.state.newProblemModalChoices
 		let correct = this.state.newProblemModalCorrect
 		if (
-			!this.isValidInput(
-				question,
-				choices,
-				correct,
-				this.state.newProblemModalIsLoading
-			)
+			!this.isValidInput(question, choices, this.state.newProblemModalIsLoading)
 		)
 			return
 
@@ -195,11 +190,13 @@ export default class ProblemSetPage extends Component {
 	}
 
 	editDeleteChoice = i => {
-		let hasSelectedCorrect = this.state.selectedProblemEditCorrect >= 0
 		let choices = this.state.selectedProblemEditChoices.slice()
-		let correct = this.state.selectedProblemEditCorrect - 1
 		choices.splice(i, 1)
-		if (correct < 0 && hasSelectedCorrect) correct = 0
+
+		let correct = this.state.selectedProblemEditCorrect
+		if (i < correct) correct--
+		else if (i === correct) correct = -1
+
 		this.setState({
 			selectedProblemEditChoices: choices,
 			selectedProblemEditCorrect: correct
@@ -207,7 +204,9 @@ export default class ProblemSetPage extends Component {
 	}
 
 	editChooseCorrect = i => {
-		this.setState({ selectedProblemEditCorrect: i })
+		if (i === this.state.selectedProblemEditCorrect)
+			this.setState({ selectedProblemEditCorrect: -1 })
+		else this.setState({ selectedProblemEditCorrect: i })
 	}
 
 	deleteProblem = async () => {
@@ -228,14 +227,7 @@ export default class ProblemSetPage extends Component {
 		let choices = this.state.selectedProblemEditChoices
 		let correct = this.state.selectedProblemEditCorrect
 
-		if (
-			!this.isValidInput(
-				question,
-				choices,
-				correct,
-				this.state.editingIsLoading
-			)
-		)
+		if (!this.isValidInput(question, choices, this.state.editingIsLoading))
 			return
 
 		this.setState({ editingIsLoading: true })
@@ -337,9 +329,11 @@ export default class ProblemSetPage extends Component {
 			// immediate results
 			let backgroundColor = Array.from(
 				{ length: currentProblem.choices.length },
-				() => 'rgba(255, 99, 132, 0.2)'
+				() => 'rgba(132, 132, 132, 0.2)'
 			)
-			backgroundColor[currentProblem.correct] = '#20df8f88'
+
+			if (currentProblem.correct >= 0)
+				backgroundColor[currentProblem.correct] = '#20df8f88'
 
 			problemData = {
 				labels: letters.slice(0, currentProblem.choices.length),
@@ -366,12 +360,13 @@ export default class ProblemSetPage extends Component {
 				this.state.selectedProblem
 			]
 
-			// viewing results
 			let backgroundColor = Array.from(
 				{ length: selectedProblem.choices.length },
-				() => 'rgba(255, 99, 132, 0.2)'
+				() => 'rgba(132, 132, 132, 0.2)'
 			)
-			backgroundColor[selectedProblem.correct] = '#20df8f88'
+
+			if (selectedProblem.correct >= 0)
+				backgroundColor[selectedProblem.correct] = '#20df8f88'
 
 			resultData = {
 				labels: letters.slice(0, selectedProblem.choices.length),
@@ -505,7 +500,6 @@ export default class ProblemSetPage extends Component {
 							!this.isValidInput(
 								this.state.newProblemModalQuestion,
 								this.state.newProblemModalChoices,
-								this.state.newProblemModalCorrect,
 								this.state.newProblemModalIsLoading
 							)
 						}
@@ -617,7 +611,6 @@ export default class ProblemSetPage extends Component {
 														!this.isValidInput(
 															this.state.selectedProblemEditQuestion,
 															this.state.selectedProblemEditChoices,
-															this.state.selectedProblemEditCorrect,
 															this.state.editingIsLoading
 														)
 													}

@@ -215,6 +215,9 @@ export default class TeacherClassPage extends Component {
 					contentLabel="Class QR Code">
 					<h3>Class QR Code</h3>
 					<div className="row v-center-content">
+						<h1>{this.state.class.code}</h1>
+					</div>
+					<div className="row v-center-content">
 						<QRCode value={this.state.class.code} size={256} />
 					</div>
 				</Modal>
